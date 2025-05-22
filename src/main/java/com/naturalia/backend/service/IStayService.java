@@ -1,5 +1,6 @@
 package com.naturalia.backend.service;
 
+import com.naturalia.backend.dto.StaySummaryDTO;
 import com.naturalia.backend.exception.ResourceNotFoundException;
 import com.naturalia.backend.entity.Stay;
 
@@ -13,4 +14,6 @@ public interface IStayService {
     void update(Stay stay) throws Exception;
     void delete(Long id) throws ResourceNotFoundException;
     List<Stay> findAll();
+    List<StaySummaryDTO> findAllSummaries();
+
 }

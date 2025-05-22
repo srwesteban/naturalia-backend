@@ -1,5 +1,6 @@
 package com.naturalia.backend.controller;
 
+import com.naturalia.backend.dto.StaySummaryDTO;
 import com.naturalia.backend.entity.Stay;
 import com.naturalia.backend.exception.ResourceNotFoundException;
 import com.naturalia.backend.service.IStayService;
@@ -43,4 +44,10 @@ public class StayController {
         stayService.delete(id);
         return ResponseEntity.noContent().build();
     }
+
+    @GetMapping("/summary")
+    public ResponseEntity<List<StaySummaryDTO>> getStaySummaries() {
+        return ResponseEntity.ok(stayService.findAllSummaries());
+    }
+
 }

@@ -1,5 +1,6 @@
 package com.naturalia.backend.service.impl;
 
+import com.naturalia.backend.dto.StaySummaryDTO;
 import com.naturalia.backend.exception.ResourceNotFoundException;
 import com.naturalia.backend.entity.Stay;
 import com.naturalia.backend.repository.StayRepository;
@@ -8,6 +9,7 @@ import org.springframework.stereotype.Service;
 
 import java.util.List;
 import java.util.Optional;
+import java.util.stream.Collectors;
 
 @Service
 public class StayService implements IStayService {
@@ -53,4 +55,12 @@ public class StayService implements IStayService {
     public List<Stay> findAll() {
         return stayRepository.findAll();
     }
+
+    public List<StaySummaryDTO> findAllSummaries() {
+        return stayRepository.findAll()
+                .stream()
+                .map(stay -> new StaySummaryDTO(stay.getId(), stay.getName()))
+                .collect(Collectors.toList());
+    }
+
 }
