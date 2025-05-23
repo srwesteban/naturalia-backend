@@ -57,11 +57,13 @@ public class StayService implements IStayService {
         return stayRepository.findAll();
     }
 
+    @Override
     public List<StaySummaryDTO> findAllSummaries() {
         return stayRepository.findAll()
                 .stream()
                 .map(stay -> new StaySummaryDTO(stay.getId(), stay.getName()))
                 .collect(Collectors.toList());
     }
+
 
 }
