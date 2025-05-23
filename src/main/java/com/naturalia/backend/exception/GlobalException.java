@@ -18,4 +18,9 @@ public class GlobalException {
         return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(exception.getMessage());
     }
 
+    @ExceptionHandler(DuplicateNameException.class)
+    public ResponseEntity<String> handleDuplicateNameException(DuplicateNameException ex) {
+        return ResponseEntity.status(HttpStatus.CONFLICT).body(ex.getMessage());
+    }
+
 }

@@ -8,8 +8,6 @@ public class StaySummaryDTO {
         this.id = id;
         this.name = name;
     }
-
-    // Getters y setters
     public Long getId() {
         return id;
     }

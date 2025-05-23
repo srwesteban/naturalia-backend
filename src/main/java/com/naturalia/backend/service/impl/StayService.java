@@ -1,6 +1,7 @@
 package com.naturalia.backend.service.impl;
 
 import com.naturalia.backend.dto.StaySummaryDTO;
+import com.naturalia.backend.exception.DuplicateNameException;
 import com.naturalia.backend.exception.ResourceNotFoundException;
 import com.naturalia.backend.entity.Stay;
 import com.naturalia.backend.repository.StayRepository;
@@ -24,7 +25,7 @@ public class StayService implements IStayService {
     @Override
     public Stay save(Stay stay){
         if(stayRepository.existsByname(stay.getName())){
-            throw new IllegalArgumentException("A stay with this name already exists");
+            throw new DuplicateNameException("DUPLICATE_NAME");
         }
         return stayRepository.save(stay);
     }
