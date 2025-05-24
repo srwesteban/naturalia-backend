@@ -37,6 +37,19 @@ public class Stay {
     @Enumerated(EnumType.STRING)
     private StayType type;
 
+    public Stay(Long id, String name, String description, List<String> images, String location, int capacity, double pricePerNight, StayType type) {
+        this.id = id;
+        this.name = name;
+        this.description = description;
+        this.images = images;
+        this.location = location;
+        this.capacity = capacity;
+        this.pricePerNight = pricePerNight;
+        this.type = type;
+    }
+
+    public Stay() {
+    }
 
     public Long getId() {
         return id;
