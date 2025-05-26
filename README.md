@@ -84,5 +84,12 @@ npm run dev
 - Frontend: [https://github.com/srwesteban/naturalia-frontend](https://github.com/srwesteban/naturalia-frontend)
 
 ---
+logo:
+https://res.cloudinary.com/dy6udvu4e/image/upload/v1748229233/Logo_pf2jgo.png
+paleta:
+https://www.pokemonpalette.com/leafeon
+1:rgb(218, 188, 134)
+2:rgb(49, 87, 68)
+3:rgb(108, 188, 140)
 
 ¡Sprint 1 completo con éxito! 💪
