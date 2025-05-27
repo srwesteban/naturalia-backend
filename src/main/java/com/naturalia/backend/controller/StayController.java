@@ -12,7 +12,7 @@ import java.util.List;
 
 @RestController
 @RequestMapping("/stays")
-@CrossOrigin(origins = "*") // cambiar luego
+@CrossOrigin(origins = "http://localhost:5173", allowCredentials = "true")
 public class StayController {
 
     private final IStayService stayService;
