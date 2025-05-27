@@ -61,7 +61,7 @@ public class StayService implements IStayService {
     public List<StaySummaryDTO> findAllSummaries() {
         return IStayRepository.findAll()
                 .stream()
-                .map(stay -> new StaySummaryDTO(stay.getId(), stay.getName()))
+                .map(stay -> new StaySummaryDTO(stay.getId(), stay.getName(), stay.getType()))
                 .collect(Collectors.toList());
     }
 
