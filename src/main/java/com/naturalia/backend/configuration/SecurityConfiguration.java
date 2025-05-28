@@ -26,15 +26,17 @@ public class SecurityConfiguration {
                 .cors().and()                          // <— Habilita CORS según tu CorsConfig
                 .csrf(AbstractHttpConfigurer::disable)
                 .authorizeHttpRequests(auth -> auth
-                        .requestMatchers("/auth/**").permitAll()
-                        .requestMatchers(HttpMethod.GET, "/swagger-ui/**", "/v3/api-docs/**", "/swagger-ui.html", "/stays").permitAll()
-                        .requestMatchers(HttpMethod.POST, "/stays/**").hasRole("ADMIN")
-                        .requestMatchers(HttpMethod.PUT, "/stays/**").hasRole("ADMIN")
-                        .requestMatchers(HttpMethod.DELETE, "/stays/**").hasRole("ADMIN")
-                        .requestMatchers(HttpMethod.GET, "/users/**").hasRole("ADMIN")
-                        .requestMatchers(HttpMethod.PUT, "/users/**").hasRole("ADMIN")
-                        .requestMatchers(HttpMethod.DELETE, "/users/**").hasRole("ADMIN")
-                        .anyRequest().authenticated())
+                        .anyRequest().permitAll())
+
+//                        .requestMatchers("/auth/**").permitAll()
+//                        .requestMatchers(HttpMethod.GET, "/swagger-ui/**", "/v3/api-docs/**", "/swagger-ui.html", "/stays").permitAll()
+//                        .requestMatchers(HttpMethod.POST, "/stays/**").hasRole("ADMIN")
+//                        .requestMatchers(HttpMethod.PUT, "/stays/**").hasRole("ADMIN")
+//                        .requestMatchers(HttpMethod.DELETE, "/stays/**").hasRole("ADMIN")
+//                        .requestMatchers(HttpMethod.GET, "/users/**").hasRole("ADMIN")
+//                        .requestMatchers(HttpMethod.PUT, "/users/**").hasRole("ADMIN")
+//                        .requestMatchers(HttpMethod.DELETE, "/users/**").hasRole("ADMIN")
+//                        .anyRequest().authenticated())
                 .sessionManagement(session -> session.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
                 .authenticationProvider(authenticationProvider)
                 .addFilterBefore(jwtAuthenticationFilter, UsernamePasswordAuthenticationFilter.class);

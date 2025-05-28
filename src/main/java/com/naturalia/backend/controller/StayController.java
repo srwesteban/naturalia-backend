@@ -1,5 +1,7 @@
 package com.naturalia.backend.controller;
 
+import com.naturalia.backend.dto.StayDTO;
+import com.naturalia.backend.dto.StayRequest;
 import com.naturalia.backend.dto.StaySummaryDTO;
 import com.naturalia.backend.entity.Stay;
 import com.naturalia.backend.exception.ResourceNotFoundException;
@@ -22,8 +24,9 @@ public class StayController {
     }
 
     @PostMapping
-    public ResponseEntity<Stay> createStay(@RequestBody Stay stay) {
-        Stay created = stayService.save(stay);
+    public ResponseEntity<StayDTO> createStay(@RequestBody StayRequest request) {
+        System.out.println(">>> Recibido StayRequest con nombre: " + request.getName());
+        StayDTO created = stayService.create(request);
         return new ResponseEntity<>(created, HttpStatus.CREATED);
     }
 

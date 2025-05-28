@@ -3,6 +3,7 @@ package com.naturalia.backend.entity;
 import jakarta.persistence.*;
 import lombok.*;
 
+import java.util.ArrayList;
 import java.util.List;
 
 @Entity
@@ -26,7 +27,7 @@ public class Stay {
     @ElementCollection
     @CollectionTable(name = "stay_images", joinColumns = @JoinColumn(name = "stay_id"))
     @Column(name = "image_url")
-    private List<String> images;
+    private List<String> images = new ArrayList<>();
 
     private String location;
 
@@ -37,81 +38,11 @@ public class Stay {
     @Enumerated(EnumType.STRING)
     private StayType type;
 
-//    public Stay(Long id, String name, String description, List<String> images, String location, int capacity, double pricePerNight, StayType type) {
-//        this.id = id;
-//        this.name = name;
-//        this.description = description;
-//        this.images = images;
-//        this.location = location;
-//        this.capacity = capacity;
-//        this.pricePerNight = pricePerNight;
-//        this.type = type;
-//    }
-
-//    public Stay() {
-//    }
-
-    public Long getId() {
-        return id;
-    }
-
-    public void setId(Long id) {
-        this.id = id;
-    }
-
-    public String getName() {
-        return name;
-    }
-
-    public void setName(String name) {
-        this.name = name;
-    }
-
-    public String getDescription() {
-        return description;
-    }
-
-    public void setDescription(String description) {
-        this.description = description;
-    }
-
-    public List<String> getImages() {
-        return images;
-    }
-
-    public void setImages(List<String> images) {
-        this.images = images;
-    }
-
-    public String getLocation() {
-        return location;
-    }
-
-    public void setLocation(String location) {
-        this.location = location;
-    }
-
-    public int getCapacity() {
-        return capacity;
-    }
-
-    public void setCapacity(int capacity) {
-        this.capacity = capacity;
-    }
-
-    public double getPricePerNight() {
-        return pricePerNight;
-    }
-
-    public void setPricePerNight(double pricePerNight) {
-        this.pricePerNight = pricePerNight;
-    }
-
-    public StayType getType() {
-        return type;
-    }
-
-    public void setType(StayType type) {
-        this.type = type;
-    }
+    @ManyToMany
+    @JoinTable(
+            name = "stay_features",
+            joinColumns = @JoinColumn(name = "stay_id"),
+            inverseJoinColumns = @JoinColumn(name = "feature_id")
+    )
+    private List<Feature> features = new ArrayList<>();
 }
