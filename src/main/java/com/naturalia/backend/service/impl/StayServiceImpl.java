@@ -3,6 +3,7 @@ package com.naturalia.backend.service.impl;
 import com.naturalia.backend.dto.*;
 import com.naturalia.backend.entity.Feature;
 import com.naturalia.backend.entity.Stay;
+import com.naturalia.backend.entity.StayType;
 import com.naturalia.backend.exception.DuplicateNameException;
 import com.naturalia.backend.exception.ResourceNotFoundException;
 import com.naturalia.backend.repository.IFeatureRepository;
@@ -52,8 +53,11 @@ public class StayServiceImpl implements IStayService {
     }
 
     @Override
-    public List<Stay> findAll() {
-        return stayRepository.findAll();
+    public List<StayDTO> findAll() {
+        return stayRepository.findAll()
+                .stream()
+                .map(this::convertToDTO)
+                .toList();
     }
 
     @Override
@@ -109,6 +113,31 @@ public class StayServiceImpl implements IStayService {
         return convertToDTO(stayRepository.save(stay));
     }
 
+    @Override
+    public List<StayDTO> findAllDTOs() {
+        return stayRepository.findAll()
+                .stream()
+                .map(this::convertToDTO)
+                .toList();
+    }
+
+    @Override
+    public List<StayDTO> findDTOsByTypes(List<StayType> types) {
+        return stayRepository.findByTypeIn(types)
+                .stream()
+                .map(this::convertToDTO)
+                .toList();
+    }
+
+    @Override
+    public StayDTO findDTOById(Long id) {
+        Stay stay = stayRepository.findById(id)
+                .orElseThrow(() -> new ResourceNotFoundException("Stay not found with id: " + id));
+        return convertToDTO(stay);
+    }
+
+
+
     private StayDTO convertToDTO(Stay stay) {
         return StayDTO.builder()
                 .id(stay.getId())
@@ -129,5 +158,10 @@ public class StayServiceImpl implements IStayService {
                                 .collect(Collectors.toList())
                 )
                 .build();
+    }
+
+    @Override
+    public List<Stay> findByTypes(List<StayType> types) {
+        return stayRepository.findByTypeIn(types);
     }
 }

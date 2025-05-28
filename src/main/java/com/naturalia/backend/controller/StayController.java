@@ -4,6 +4,7 @@ import com.naturalia.backend.dto.StayDTO;
 import com.naturalia.backend.dto.StayRequest;
 import com.naturalia.backend.dto.StaySummaryDTO;
 import com.naturalia.backend.entity.Stay;
+import com.naturalia.backend.entity.StayType;
 import com.naturalia.backend.exception.ResourceNotFoundException;
 import com.naturalia.backend.service.IStayService;
 import org.springframework.http.HttpStatus;
@@ -31,9 +32,10 @@ public class StayController {
     }
 
     @GetMapping
-    public ResponseEntity<List<Stay>> getAllStays() {
-        return ResponseEntity.ok(stayService.findAll());
+    public ResponseEntity<List<StayDTO>> getAllStays() {
+        return ResponseEntity.ok(stayService.findAllDTOs());
     }
+
 
     @GetMapping("/{id}")
     public ResponseEntity<Stay> getStayById(@PathVariable Long id) {
@@ -52,5 +54,11 @@ public class StayController {
     public ResponseEntity<List<StaySummaryDTO>> getStaySummaries() {
         return ResponseEntity.ok(stayService.findAllSummaries());
     }
+
+    @GetMapping("/filter")
+    public ResponseEntity<List<Stay>> filterByTypes(@RequestParam List<StayType> types) {
+        return ResponseEntity.ok(stayService.findByTypes(types));
+    }
+
 
 }
