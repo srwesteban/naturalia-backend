@@ -1,15 +1,20 @@
 package com.naturalia.backend.service.impl;
 
 import com.naturalia.backend.dto.*;
+import com.naturalia.backend.entity.Category;
 import com.naturalia.backend.entity.Feature;
 import com.naturalia.backend.entity.Stay;
-import com.naturalia.backend.entity.StayType;
+import com.naturalia.backend.entity.User;
 import com.naturalia.backend.exception.DuplicateNameException;
 import com.naturalia.backend.exception.ResourceNotFoundException;
+import com.naturalia.backend.repository.ICategoryRepository;
 import com.naturalia.backend.repository.IFeatureRepository;
 import com.naturalia.backend.repository.IStayRepository;
+import com.naturalia.backend.repository.IUserRepository;
 import com.naturalia.backend.service.IStayService;
 import lombok.RequiredArgsConstructor;
+import org.springframework.security.core.Authentication;
+import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
@@ -22,10 +27,12 @@ public class StayServiceImpl implements IStayService {
 
     private final IStayRepository stayRepository;
     private final IFeatureRepository featureRepository;
+    private final ICategoryRepository categoryRepository;
+    private final IUserRepository userRepository;
 
     @Override
     public Stay save(Stay stay) {
-        if (stayRepository.existsByname(stay.getName())) {
+        if (stayRepository.existsByName(stay.getName())) {
             throw new DuplicateNameException("DUPLICATE_NAME");
         }
         return stayRepository.save(stay);
@@ -53,27 +60,24 @@ public class StayServiceImpl implements IStayService {
     }
 
     @Override
-    public List<StayDTO> findAll() {
-        return stayRepository.findAll()
-                .stream()
-                .map(this::convertToDTO)
-                .toList();
-    }
-
-    @Override
-    public List<StaySummaryDTO> findAllSummaries() {
-        return stayRepository.findAll()
-                .stream()
-                .map(stay -> new StaySummaryDTO(stay.getId(), stay.getName(), stay.getType()))
-                .collect(Collectors.toList());
-    }
-
-    @Override
     public StayDTO create(StayRequest request) {
-        System.out.println("Creando Stay con features: " + request.getFeatureIds());
+        User host;
+        if (request.getHostId() != null) {
+            host = userRepository.findById(request.getHostId())
+                    .orElseThrow(() -> new ResourceNotFoundException("Host no encontrado"));
+        } else {
+            Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
+            String email = authentication.getName();
+            host = userRepository.findByEmail(email)
+                    .orElseThrow(() -> new ResourceNotFoundException("Usuario no encontrado"));
+        }
 
         List<Feature> features = featureRepository.findAllById(
                 request.getFeatureIds() != null ? request.getFeatureIds() : List.of()
+        );
+
+        List<Category> categories = categoryRepository.findAllById(
+                request.getCategoryIds() != null ? request.getCategoryIds() : List.of()
         );
 
         Stay stay = Stay.builder()
@@ -83,12 +87,17 @@ public class StayServiceImpl implements IStayService {
                 .location(request.getLocation())
                 .capacity(request.getCapacity())
                 .pricePerNight(request.getPricePerNight())
-                .type(request.getType())
+                .bedrooms(request.getBedrooms())
+                .beds(request.getBeds())
+                .bathrooms(request.getBathrooms())
+                .latitude(request.getLatitude())
+                .longitude(request.getLongitude())
                 .features(features)
+                .categories(categories)
+                .host(host)
                 .build();
 
         Stay saved = stayRepository.save(stay);
-
         return convertToDTO(saved);
     }
 
@@ -101,32 +110,33 @@ public class StayServiceImpl implements IStayService {
                 request.getFeatureIds() != null ? request.getFeatureIds() : List.of()
         );
 
+        List<Category> categories = categoryRepository.findAllById(
+                request.getCategoryIds() != null ? request.getCategoryIds() : List.of()
+        );
+
         stay.setName(request.getName());
         stay.setDescription(request.getDescription());
         stay.setImages(request.getImages());
         stay.setLocation(request.getLocation());
         stay.setCapacity(request.getCapacity());
         stay.setPricePerNight(request.getPricePerNight());
-        stay.setType(request.getType());
+        stay.setBedrooms(request.getBedrooms());
+        stay.setBeds(request.getBeds());
+        stay.setBathrooms(request.getBathrooms());
+        stay.setLatitude(request.getLatitude());
+        stay.setLongitude(request.getLongitude());
         stay.setFeatures(features);
+        stay.setCategories(categories);
 
         return convertToDTO(stayRepository.save(stay));
     }
 
     @Override
-    public List<StayDTO> findAllDTOs() {
+    public List<StayDTO> findAll() {
         return stayRepository.findAll()
                 .stream()
                 .map(this::convertToDTO)
-                .toList();
-    }
-
-    @Override
-    public List<StayDTO> findDTOsByTypes(List<StayType> types) {
-        return stayRepository.findByTypeIn(types)
-                .stream()
-                .map(this::convertToDTO)
-                .toList();
+                .collect(Collectors.toList());
     }
 
     @Override
@@ -136,7 +146,13 @@ public class StayServiceImpl implements IStayService {
         return convertToDTO(stay);
     }
 
-
+    @Override
+    public List<StayDTO> findAllDTOs() {
+        return stayRepository.findAll()
+                .stream()
+                .map(this::convertToDTO)
+                .collect(Collectors.toList());
+    }
 
     private StayDTO convertToDTO(Stay stay) {
         return StayDTO.builder()
@@ -147,21 +163,26 @@ public class StayServiceImpl implements IStayService {
                 .location(stay.getLocation())
                 .capacity(stay.getCapacity())
                 .pricePerNight(stay.getPricePerNight())
-                .type(stay.getType())
-                .features(
-                        stay.getFeatures().stream()
-                                .map(feature -> FeatureDTO.builder()
-                                        .id(feature.getId())
-                                        .name(feature.getName())
-                                        .icon(feature.getIcon())
-                                        .build())
-                                .collect(Collectors.toList())
-                )
+                .bedrooms(stay.getBedrooms())
+                .beds(stay.getBeds())
+                .bathrooms(stay.getBathrooms())
+                .latitude(stay.getLatitude())
+                .longitude(stay.getLongitude())
+                .features(stay.getFeatures().stream()
+                        .map(feature -> FeatureDTO.builder()
+                                .id(feature.getId())
+                                .name(feature.getName())
+                                .icon(feature.getIcon())
+                                .build())
+                        .collect(Collectors.toList()))
+                .categories(stay.getCategories().stream()
+                        .map(category -> CategoryDTO.builder()
+                                .id(category.getId())
+                                .title(category.getTitle())
+                                .description(category.getDescription())
+                                .imageUrl(category.getImageUrl())
+                                .build())
+                        .collect(Collectors.toList()))
                 .build();
-    }
-
-    @Override
-    public List<Stay> findByTypes(List<StayType> types) {
-        return stayRepository.findByTypeIn(types);
     }
 }

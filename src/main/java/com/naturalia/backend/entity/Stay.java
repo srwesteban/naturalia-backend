@@ -30,13 +30,15 @@ public class Stay {
     private List<String> images = new ArrayList<>();
 
     private String location;
-
     private int capacity;
-
     private double pricePerNight;
 
-    @Enumerated(EnumType.STRING)
-    private StayType type;
+    private int bedrooms;
+    private int beds;
+    private int bathrooms;
+
+    private double latitude;
+    private double longitude;
 
     @ManyToMany
     @JoinTable(
@@ -45,4 +47,16 @@ public class Stay {
             inverseJoinColumns = @JoinColumn(name = "feature_id")
     )
     private List<Feature> features = new ArrayList<>();
+
+    @ManyToMany
+    @JoinTable(
+            name = "stay_categories",
+            joinColumns = @JoinColumn(name = "stay_id"),
+            inverseJoinColumns = @JoinColumn(name = "category_id")
+    )
+    private List<Category> categories = new ArrayList<>();
+
+    @ManyToOne
+    @JoinColumn(name = "host_id")
+    private User host;
 }

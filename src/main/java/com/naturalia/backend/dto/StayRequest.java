@@ -1,6 +1,6 @@
 package com.naturalia.backend.dto;
 
-import com.naturalia.backend.entity.StayType;
+import com.naturalia.backend.entity.User;
 import lombok.*;
 
 import java.util.List;
@@ -16,6 +16,24 @@ public class StayRequest {
     private String location;
     private int capacity;
     private double pricePerNight;
-    private StayType type;
+
+    private int bedrooms;
+    private int beds;
+    private int bathrooms;
+
+    private double latitude;
+    private double longitude;
+
     private List<Long> featureIds;
+    private List<Long> categoryIds;
+
+    private Long hostId; // 👈 importante
+
+    public List<Long> getCategoryIds() {
+        return categoryIds;
+    }
+
+    public void setCategoryIds(List<Long> categoryIds) {
+        this.categoryIds = categoryIds;
+    }
 }

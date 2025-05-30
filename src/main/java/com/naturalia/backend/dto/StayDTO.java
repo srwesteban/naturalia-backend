@@ -1,6 +1,5 @@
 package com.naturalia.backend.dto;
 
-import com.naturalia.backend.entity.StayType;
 import lombok.*;
 
 import java.util.List;
@@ -17,8 +16,13 @@ public class StayDTO {
     private String location;
     private int capacity;
     private double pricePerNight;
-    private StayType type;
+
+    private int bedrooms;
+    private int beds;
+    private int bathrooms;
+    private double latitude;
+    private double longitude;
+
     private List<FeatureDTO> features;
-
-
+    private List<CategoryDTO> categories;
 }

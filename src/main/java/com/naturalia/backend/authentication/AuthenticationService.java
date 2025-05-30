@@ -28,8 +28,12 @@ public class AuthenticationService {
                 .lastname(request.getLastname())
                 .email(request.getEmail())
                 .password(passwordEncoder.encode(request.getPassword()))
+                .documentType(request.getDocumentType())
+                .documentNumber(request.getDocumentNumber())
+                .phoneNumber(request.getPhoneNumber())
                 .role(Role.USER)
                 .build();
+
 
         userRepository.save(user);
 

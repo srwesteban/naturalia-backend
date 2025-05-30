@@ -33,9 +33,20 @@ public class User implements UserDetails {
     @Column(nullable = false)
     private String password;
 
+    @Column(name = "document_type")
+    private String documentType;
+
+    @Column(name = "document_number", unique = true)
+    private String documentNumber;
+
+    @Column(name = "phone_number")
+    private String phoneNumber;
+
     @Enumerated(EnumType.STRING)
     @Column(nullable = false)
     private Role role;
+
+    // === Security ===
 
     @Override
     public Collection<? extends GrantedAuthority> getAuthorities() {
@@ -72,6 +83,3 @@ public class User implements UserDetails {
         return true;
     }
 }
-
-
-

@@ -25,5 +25,12 @@ public class RegisterRequest {
     @Size(min = 6, message = "La contraseña debe tener al menos 6 caracteres")
     private String password;
 
+    @NotBlank(message = "El tipo de documento es obligatorio")
+    private String documentType;
 
+    @NotBlank(message = "El número de documento es obligatorio")
+    private String documentNumber;
+
+    @NotBlank(message = "El número de teléfono es obligatorio")
+    private String phoneNumber;
 }

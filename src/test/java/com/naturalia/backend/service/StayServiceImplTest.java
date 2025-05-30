@@ -1,7 +1,6 @@
 package com.naturalia.backend.service;
 
 import com.naturalia.backend.entity.Stay;
-import com.naturalia.backend.entity.StayType;
 import com.naturalia.backend.exception.ResourceNotFoundException;
 import com.naturalia.backend.repository.IStayRepository;
 import com.naturalia.backend.service.impl.StayServiceImpl;
@@ -29,7 +28,7 @@ public class StayServiceImplTest {
     @Test
     void saveStay_shouldReturnSavedStay() {
         FAKELIST.add("Test");
-        Stay stay = new Stay(1L, "Cabaña Mágica", "Montaña", FAKELIST, "Prueba", 2,1, StayType.GLAMPING);
+        Stay stay = new Stay(1L, "Cabaña Mágica", "Montaña", FAKELIST, "Prueba", 2,1);
         when(IStayRepository.save(any(Stay.class))).thenReturn(stay);
 
         Stay result = stayServiceImpl.save(stay);

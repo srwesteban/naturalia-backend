@@ -2,9 +2,6 @@ package com.naturalia.backend.controller;
 
 import com.naturalia.backend.dto.StayDTO;
 import com.naturalia.backend.dto.StayRequest;
-import com.naturalia.backend.dto.StaySummaryDTO;
-import com.naturalia.backend.entity.Stay;
-import com.naturalia.backend.entity.StayType;
 import com.naturalia.backend.exception.ResourceNotFoundException;
 import com.naturalia.backend.service.IStayService;
 import org.springframework.http.HttpStatus;
@@ -26,7 +23,6 @@ public class StayController {
 
     @PostMapping
     public ResponseEntity<StayDTO> createStay(@RequestBody StayRequest request) {
-        System.out.println(">>> Recibido StayRequest con nombre: " + request.getName());
         StayDTO created = stayService.create(request);
         return new ResponseEntity<>(created, HttpStatus.CREATED);
     }
@@ -36,29 +32,21 @@ public class StayController {
         return ResponseEntity.ok(stayService.findAllDTOs());
     }
 
-
     @GetMapping("/{id}")
-    public ResponseEntity<Stay> getStayById(@PathVariable Long id) {
-        return stayService.findById(id)
-                .map(ResponseEntity::ok)
-                .orElseThrow(() -> new ResourceNotFoundException("Stay not found with id: " + id));
+    public ResponseEntity<StayDTO> getStayById(@PathVariable Long id) {
+        StayDTO stay = stayService.findDTOById(id);
+        return ResponseEntity.ok(stay);
+    }
+
+    @PutMapping("/{id}")
+    public ResponseEntity<StayDTO> updateStay(@PathVariable Long id, @RequestBody StayRequest request) {
+        StayDTO updated = stayService.updateStay(id, request);
+        return ResponseEntity.ok(updated);
     }
 
     @DeleteMapping("/{id}")
-    public ResponseEntity<Void> deleteStay(@PathVariable Long id) throws ResourceNotFoundException {
+    public ResponseEntity<Void> deleteStay(@PathVariable Long id) {
         stayService.delete(id);
         return ResponseEntity.noContent().build();
     }
-
-    @GetMapping("/summary")
-    public ResponseEntity<List<StaySummaryDTO>> getStaySummaries() {
-        return ResponseEntity.ok(stayService.findAllSummaries());
-    }
-
-    @GetMapping("/filter")
-    public ResponseEntity<List<Stay>> filterByTypes(@RequestParam List<StayType> types) {
-        return ResponseEntity.ok(stayService.findByTypes(types));
-    }
-
-
 }
