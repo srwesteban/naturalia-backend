@@ -5,6 +5,7 @@ import com.naturalia.backend.dto.StayRequest;
 import com.naturalia.backend.entity.Stay;
 import com.naturalia.backend.exception.ResourceNotFoundException;
 
+import java.time.LocalDate;
 import java.util.List;
 import java.util.Optional;
 
@@ -27,4 +28,7 @@ public interface IStayService {
     List<StayDTO> findAllDTOs();
 
     StayDTO findDTOById(Long id);
+
+    List<StayDTO> search(String location, LocalDate startDate, LocalDate endDate);
+
 }

@@ -17,6 +17,7 @@ import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Service;
 
+import java.time.LocalDate;
 import java.util.List;
 import java.util.Optional;
 import java.util.stream.Collectors;
@@ -185,4 +186,21 @@ public class StayServiceImpl implements IStayService {
                         .collect(Collectors.toList()))
                 .build();
     }
+
+    @Override
+    public List<StayDTO> search(String location, LocalDate startDate, LocalDate endDate) {
+        List<Stay> stays;
+
+        if (startDate != null && endDate != null) {
+            stays = stayRepository.findAvailableStays(location, startDate, endDate);
+        } else {
+            stays = stayRepository.findByLocationContainingIgnoreCase(location == null ? "" : location);
+        }
+
+        return stays.stream()
+                .map(this::convertToDTO)
+                .collect(Collectors.toList());
+    }
+
+
 }

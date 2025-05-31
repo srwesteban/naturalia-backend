@@ -4,10 +4,12 @@ import com.naturalia.backend.dto.StayDTO;
 import com.naturalia.backend.dto.StayRequest;
 import com.naturalia.backend.exception.ResourceNotFoundException;
 import com.naturalia.backend.service.IStayService;
+import org.springframework.format.annotation.DateTimeFormat;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
+import java.time.LocalDate;
 import java.util.List;
 
 @RestController
@@ -49,4 +51,15 @@ public class StayController {
         stayService.delete(id);
         return ResponseEntity.noContent().build();
     }
+
+    @GetMapping("/search")
+    public ResponseEntity<List<StayDTO>> searchStays(
+            @RequestParam(required = false) String location,
+            @RequestParam(required = false) @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) LocalDate startDate,
+            @RequestParam(required = false) @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) LocalDate endDate
+    ) {
+        List<StayDTO> results = stayService.search(location, startDate, endDate);
+        return ResponseEntity.ok(results);
+    }
+
 }
