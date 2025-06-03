@@ -11,7 +11,7 @@ import java.util.Optional;
 
 public interface IStayService {
 
-    Stay save(Stay stay); // útil para uso interno o testing
+    Stay save(Stay stay);
 
     Optional<Stay> findById(Long id) throws ResourceNotFoundException;
 
@@ -29,6 +29,10 @@ public interface IStayService {
 
     StayDTO findDTOById(Long id);
 
-    List<StayDTO> search(String location, LocalDate startDate, LocalDate endDate);
+    List<Stay> findAvailableStays(LocalDate checkIn, LocalDate checkOut);
+
+    List<StayDTO> getSuggestionsByName(String query);
+
+
 
 }

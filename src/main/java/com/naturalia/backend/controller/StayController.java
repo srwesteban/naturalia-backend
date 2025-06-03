@@ -2,6 +2,7 @@ package com.naturalia.backend.controller;
 
 import com.naturalia.backend.dto.StayDTO;
 import com.naturalia.backend.dto.StayRequest;
+import com.naturalia.backend.entity.Stay;
 import com.naturalia.backend.exception.ResourceNotFoundException;
 import com.naturalia.backend.service.IStayService;
 import org.springframework.format.annotation.DateTimeFormat;
@@ -53,13 +54,28 @@ public class StayController {
     }
 
     @GetMapping("/search")
-    public ResponseEntity<List<StayDTO>> searchStays(
-            @RequestParam(required = false) String location,
-            @RequestParam(required = false) @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) LocalDate startDate,
-            @RequestParam(required = false) @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) LocalDate endDate
+    public ResponseEntity<List<Stay>> searchAvailableStays(
+            @RequestParam LocalDate checkIn,
+            @RequestParam LocalDate checkOut
     ) {
-        List<StayDTO> results = stayService.search(location, startDate, endDate);
-        return ResponseEntity.ok(results);
+        if (checkIn == null || checkOut == null || checkOut.isBefore(checkIn)) {
+            return ResponseEntity.badRequest().build();
+        }
+
+        List<Stay> availableStays = stayService.findAvailableStays(checkIn, checkOut);
+        return ResponseEntity.ok(availableStays);
     }
+
+    @GetMapping("/suggestions")
+    public ResponseEntity<List<StayDTO>> getSuggestions(@RequestParam String query) {
+        if (query == null || query.trim().isEmpty()) {
+            return ResponseEntity.badRequest().build();
+        }
+        return ResponseEntity.ok(stayService.getSuggestionsByName(query));
+    }
+
+
+
+
 
 }

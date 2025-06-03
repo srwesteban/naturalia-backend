@@ -25,4 +25,6 @@ public class StayDTO {
 
     private List<FeatureDTO> features;
     private List<CategoryDTO> categories;
+
+    private UserDTO host;
 }

@@ -7,6 +7,7 @@ import com.naturalia.backend.entity.Stay;
 import com.naturalia.backend.entity.User;
 import com.naturalia.backend.exception.DuplicateNameException;
 import com.naturalia.backend.exception.ResourceNotFoundException;
+import com.naturalia.backend.mapper.StayMapper;
 import com.naturalia.backend.repository.ICategoryRepository;
 import com.naturalia.backend.repository.IFeatureRepository;
 import com.naturalia.backend.repository.IStayRepository;
@@ -30,6 +31,8 @@ public class StayServiceImpl implements IStayService {
     private final IFeatureRepository featureRepository;
     private final ICategoryRepository categoryRepository;
     private final IUserRepository userRepository;
+    private final StayMapper stayMapper;
+
 
     @Override
     public Stay save(Stay stay) {
@@ -147,6 +150,7 @@ public class StayServiceImpl implements IStayService {
         return convertToDTO(stay);
     }
 
+
     @Override
     public List<StayDTO> findAllDTOs() {
         return stayRepository.findAll()
@@ -187,20 +191,19 @@ public class StayServiceImpl implements IStayService {
                 .build();
     }
 
-    @Override
-    public List<StayDTO> search(String location, LocalDate startDate, LocalDate endDate) {
-        List<Stay> stays;
 
-        if (startDate != null && endDate != null) {
-            stays = stayRepository.findAvailableStays(location, startDate, endDate);
-        } else {
-            stays = stayRepository.findByLocationContainingIgnoreCase(location == null ? "" : location);
-        }
-
-        return stays.stream()
-                .map(this::convertToDTO)
-                .collect(Collectors.toList());
+    public List<Stay> findAvailableStays(LocalDate checkIn, LocalDate checkOut) {
+        return stayRepository.findAvailableStays(checkIn, checkOut);
     }
+
+    @Override
+    public List<StayDTO> getSuggestionsByName(String query) {
+        return stayRepository.findByNameContainingIgnoreCase(query)
+                .stream()
+                .map(stayMapper::toDTO) // usa tu mapper para no devolver entidades completas
+                .toList();
+    }
+
 
 
 }

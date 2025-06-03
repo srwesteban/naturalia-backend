@@ -29,4 +29,24 @@ public interface IStayRepository extends JpaRepository<Stay, Long> {
 
     List<Stay> findByLocationContainingIgnoreCase(String location);
 
+
+    @Query("""
+                SELECT s FROM Stay s
+                WHERE s.id NOT IN (
+                    SELECT r.stay.id FROM Reservation r
+                    WHERE r.checkIn < :checkOut AND r.checkOut > :checkIn
+                )
+            """)
+    List<Stay> findAvailableStays(
+            @Param("checkIn") LocalDate checkIn,
+            @Param("checkOut") LocalDate checkOut
+    );
+
+    @Query("""
+                SELECT s FROM Stay s
+                WHERE LOWER(s.name) LIKE LOWER(CONCAT('%', :query, '%'))
+            """)
+    List<Stay> findByNameContainingIgnoreCase(@Param("query") String query);
+
+
 }

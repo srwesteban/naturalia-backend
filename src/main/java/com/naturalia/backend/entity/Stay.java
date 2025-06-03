@@ -59,4 +59,8 @@ public class Stay {
     @ManyToOne
     @JoinColumn(name = "host_id")
     private User host;
+
+    @OneToMany(mappedBy = "stay", cascade = CascadeType.ALL, orphanRemoval = true)
+    private List<Reservation> reservations = new ArrayList<>();
+
 }
