@@ -69,4 +69,16 @@ public class ReservationServiceImpl implements IReservationService {
         return reservationRepository.findByStayId(stayId);
     }
 
+    @Override
+    public List<Reservation> getByUser(User user) {
+        return reservationRepository.findByUser(user);
+    }
+
+    @Override
+    public void deleteById(Long id) {
+        reservationRepository.deleteById(id);
+    }
+
+
+
 }

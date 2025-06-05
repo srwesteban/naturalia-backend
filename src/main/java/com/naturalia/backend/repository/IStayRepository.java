@@ -1,5 +1,6 @@
 package com.naturalia.backend.repository;
 
+import com.naturalia.backend.entity.Category;
 import com.naturalia.backend.entity.Stay;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
@@ -47,6 +48,8 @@ public interface IStayRepository extends JpaRepository<Stay, Long> {
                 WHERE LOWER(s.name) LIKE LOWER(CONCAT('%', :query, '%'))
             """)
     List<Stay> findByNameContainingIgnoreCase(@Param("query") String query);
+    @Query("SELECT COUNT(s) > 0 FROM Stay s JOIN s.categories c WHERE c = :category")
+    boolean existsByCategory(@Param("category") Category category);
 
 
 }

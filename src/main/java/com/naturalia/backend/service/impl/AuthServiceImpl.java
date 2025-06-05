@@ -5,6 +5,8 @@ import com.naturalia.backend.entity.Role;
 import com.naturalia.backend.entity.User;
 import com.naturalia.backend.repository.IUserRepository;
 import com.naturalia.backend.service.IAuthService;
+import org.springframework.security.core.Authentication;
+import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import java.util.Optional;
@@ -34,5 +36,13 @@ public class AuthServiceImpl implements IAuthService {
                 .role(Role.USER)
                 .build();
         return IUserRepository.save(user);
+    }
+
+    @Override
+    public User getAuthenticatedUser() {
+        Authentication auth = SecurityContextHolder.getContext().getAuthentication();
+        String email = auth.getName();
+        return IUserRepository.findByEmail(email)
+                .orElseThrow(() -> new RuntimeException("User not found"));
     }
 }

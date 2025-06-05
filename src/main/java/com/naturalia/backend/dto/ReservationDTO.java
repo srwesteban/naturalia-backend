@@ -17,4 +17,9 @@ public class ReservationDTO {
     private Long userId;
     private LocalDate checkIn;
     private LocalDate checkOut;
+
+    private String stayName;
+    private String stayImage;
+    private String stayLocation;
+    private Double stayPricePerNight;
 }

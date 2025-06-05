@@ -2,6 +2,8 @@ package com.naturalia.backend.controller;
 
 import com.naturalia.backend.dto.ReservationDTO;
 import com.naturalia.backend.entity.Reservation;
+import com.naturalia.backend.entity.User;
+import com.naturalia.backend.service.IAuthService;
 import com.naturalia.backend.service.IReservationService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
@@ -16,23 +18,32 @@ import java.util.List;
 public class ReservationController {
 
     private final IReservationService reservationService;
+    private final IAuthService authService;
 
-    @GetMapping
-    public ResponseEntity<List<ReservationDTO>> getAllReservations() {
-        List<ReservationDTO> dtos = reservationService.findAll().stream()
+    @GetMapping("/mine")
+    public ResponseEntity<List<ReservationDTO>> getMyReservations() {
+        User user = authService.getAuthenticatedUser();
+        List<Reservation> reservations = reservationService.getByUser(user);
+        List<ReservationDTO> dtos = reservations.stream()
                 .map(this::convertToDTO)
                 .toList();
         return ResponseEntity.ok(dtos);
     }
 
     private ReservationDTO convertToDTO(Reservation reservation) {
-        ReservationDTO dto = new ReservationDTO();
-        dto.setId(reservation.getId());
-        dto.setStayId(reservation.getStay().getId());
-        dto.setUserId(reservation.getUser().getId());
-        dto.setCheckIn(reservation.getCheckIn());
-        dto.setCheckOut(reservation.getCheckOut());
-        return dto;
+        return ReservationDTO.builder()
+                .id(reservation.getId())
+                .stayId(reservation.getStay().getId())
+                .userId(reservation.getUser().getId())
+                .checkIn(reservation.getCheckIn())
+                .checkOut(reservation.getCheckOut())
+                .stayName(reservation.getStay().getName())
+                .stayImage(reservation.getStay().getImages() != null && !reservation.getStay().getImages().isEmpty()
+                        ? reservation.getStay().getImages().get(0)
+                        : null)
+                .stayLocation(reservation.getStay().getLocation())
+                .stayPricePerNight(reservation.getStay().getPricePerNight())
+                .build();
     }
 
 
@@ -60,6 +71,13 @@ public class ReservationController {
 
         return ResponseEntity.ok(dtos);
     }
+
+    @DeleteMapping("/{id}")
+    public ResponseEntity<Void> deleteReservation(@PathVariable Long id) {
+        reservationService.deleteById(id);
+        return ResponseEntity.noContent().build();
+    }
+
 
 
 }
