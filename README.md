@@ -270,3 +270,103 @@ Backend: https://github.com/srwesteban/naturalia-backend
 Frontend: https://github.com/srwesteban/naturalia-frontend
 
 ✅ Sprint 2 finalizado con éxito. Proyecto listo para entrega.
+
+
+
+# 🌿 Naturalia - Sprint 3
+
+> Última actualización: 2025-06-05
+
+---
+
+## 📘 Bitácora de Desarrollo
+
+**Sprint 3** tuvo como foco principal mejorar la experiencia del usuario mediante nuevas funcionalidades clave como búsqueda avanzada, favoritos, políticas por producto, y administración de categorías.
+
+**Definición del proyecto:**  
+Plataforma web de reservas de glampings y casas campestres. Los usuarios pueden buscar alojamientos por fechas o nombre, ver detalles del producto con disponibilidad, guardar favoritos, y realizar reservas. Los administradores pueden gestionar productos, categorías y políticas.
+
+---
+
+## ✅ Historias de Usuario Completadas
+
+| ID   | Historia                        | Estado |
+|------|----------------------------------|--------|
+| #22  | Realizar búsqueda                | ✅     |
+| #23  | Visualizar disponibilidad        | ✅     |
+| #24  | Marcar como favorito             | ✅     |
+| #25  | Listar productos favoritos       | ✅     |
+| #26  | Ver bloque de políticas          | ✅     |
+| #27  | Compartir productos              | ✅     |
+| #29  | Eliminar categoría               | ✅     |
+
+---
+
+## 🧪 Planificación y Ejecución de Pruebas
+
+### #22 Realizar búsqueda
+
+| Caso de prueba                             | Resultado |
+|-------------------------------------------|-----------|
+| Buscar sin texto ni fechas → mostrar todo | ✅         |
+| Buscar por nombre parcial → sugerencias   | ✅         |
+| Click en sugerencia → realiza búsqueda    | ✅         |
+| Campos requeridos vacíos → ignora búsqueda| ✅         |
+| Feedback al buscar (loading visual)       | ✅         |
+
+### #23 Visualizar disponibilidad
+
+| Caso de prueba                                       | Resultado |
+|-----------------------------------------------------|-----------|
+| Fechas reservadas aparecen en otro color            | ✅         |
+| Usuario no autenticado puede ver disponibilidad     | ✅         |
+| Errores al cargar → mensaje visible + retry         | ✅         |
+
+### #24 Marcar como favorito
+
+| Caso de prueba                          | Resultado |
+|----------------------------------------|-----------|
+| Icono visible en cards de productos    | ✅         |
+| Click → añade a favoritos              | ✅         |
+| Usuario no logueado → no se permite    | ✅         |
+| Estado persiste al refrescar           | ✅         |
+
+### #25 Listar productos favoritos
+
+| Caso de prueba                                      | Resultado |
+|----------------------------------------------------|-----------|
+| Acceso desde menú del usuario                      | ✅         |
+| Eliminar favorito desde la lista                   | ✅         |
+| Lista vacía → mensaje "sin favoritos"              | ✅         |
+| Diseño responsive correcto                         | ✅         |
+
+### #26 Ver bloque de políticas
+
+| Caso de prueba                                  | Resultado |
+|------------------------------------------------|-----------|
+| Título visible, subrayado                      | ✅         |
+| Políticas divididas en 3 columnas              | ✅         |
+| Información real cargada del backend           | ✅         |
+
+### #27 Compartir productos
+
+| Caso de prueba                           | Resultado |
+|-----------------------------------------|-----------|
+| Botón visible en detalle de producto    | ✅         |
+| Al hacer click → se abre modal redes    | ✅         |
+| Copia de link disponible                | ✅         |
+| (Integración real futura - placeholder) | ⚠️ Simulado |
+
+### #29 Eliminar categoría
+
+| Caso de prueba                                                | Resultado |
+|--------------------------------------------------------------|-----------|
+| Botón eliminar visible en panel                              | ✅         |
+| Modal de confirmación con advertencia                        | ✅         |
+| No se puede eliminar si está en uso → muestra mensaje claro  | ✅         |
+
+---
+
+## 🧾 Conclusión del Sprint
+
+Todas las funcionalidades planificadas en el Sprint 3 se desarrollaron y probaron satisfactoriamente. Se mejoró significativamente la usabilidad con interacciones más intuitivas y se fortaleció la experiencia del usuario.

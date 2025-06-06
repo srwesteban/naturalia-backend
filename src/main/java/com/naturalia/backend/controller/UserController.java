@@ -1,6 +1,6 @@
 package com.naturalia.backend.controller;
 
-import com.naturalia.backend.dto.UserDTO;
+import com.naturalia.backend.configuration.JwtService;
 import com.naturalia.backend.dto.UserSummaryDTO;
 import com.naturalia.backend.entity.Role;
 import com.naturalia.backend.entity.User;
@@ -10,7 +10,9 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 @RestController
 @RequestMapping("/users")
@@ -19,6 +21,7 @@ public class UserController {
 
     private final IUserService userService;
     private final IUserRepository userRepository;
+    private final JwtService jwtUtil;
 
     @GetMapping
     public ResponseEntity<List<User>> getAllUsers() {
@@ -26,10 +29,19 @@ public class UserController {
     }
 
     @PutMapping("/{userId}/role")
-    public ResponseEntity<User> updateUserRole(@PathVariable Long userId, @RequestParam Role role) {
+    public ResponseEntity<?> updateUserRole(@PathVariable Long userId, @RequestParam Role role) {
         User updated = userService.changeRole(userId, role);
-        return ResponseEntity.ok(updated);
+
+        Map<String, Object> claims = new HashMap<>();
+        claims.put("firstname", updated.getFirstname());
+        claims.put("email", updated.getEmail());
+        claims.put("role", updated.getRole().name());
+
+        String newToken = jwtUtil.generateToken(claims, updated); // ✅
+
+        return ResponseEntity.ok().body(Map.of("token", newToken));
     }
+
 
     @GetMapping("/hosts")
     public ResponseEntity<List<UserSummaryDTO>> getHosts() {

@@ -41,6 +41,7 @@ public class JwtService {
                 .compact();
     }
 
+
     public boolean isTokenValid(String token, UserDetails userDetails) {
         try {
             final String username = extractUsername(token);
@@ -57,7 +58,7 @@ public class JwtService {
         try {
             return extractExpiration(token).before(new Date());
         } catch (JwtException e) {
-            return true; // Expirado o inválido
+            return true;
         }
     }
 

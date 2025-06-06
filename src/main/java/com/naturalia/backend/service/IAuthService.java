@@ -6,7 +6,6 @@ import com.naturalia.backend.entity.User;
 
 public interface IAuthService {
     User register(RegisterRequest request);
-
-    // 🔧 Agrega esta firma
     User getAuthenticatedUser();
+
 }
