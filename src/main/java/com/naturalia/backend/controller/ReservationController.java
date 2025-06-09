@@ -1,9 +1,11 @@
 package com.naturalia.backend.controller;
 
 import com.naturalia.backend.dto.ReservationDTO;
+import com.naturalia.backend.dto.ReservationResponseDTO;
 import com.naturalia.backend.entity.Reservation;
 import com.naturalia.backend.entity.User;
 import com.naturalia.backend.service.IAuthService;
+import com.naturalia.backend.service.IEmailService;
 import com.naturalia.backend.service.IReservationService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
@@ -19,6 +21,7 @@ public class ReservationController {
 
     private final IReservationService reservationService;
     private final IAuthService authService;
+    private final IEmailService iEmailService;
 
     @GetMapping("/mine")
     public ResponseEntity<List<ReservationDTO>> getMyReservations() {
@@ -48,11 +51,11 @@ public class ReservationController {
 
 
     @PostMapping
-    public ResponseEntity<ReservationDTO> createReservation(@RequestBody ReservationDTO dto) {
-        Reservation reservation = reservationService.create(dto);
-        ReservationDTO response = convertToDTO(reservation);
+    public ResponseEntity<ReservationResponseDTO> createReservation(@RequestBody ReservationDTO dto) {
+        ReservationResponseDTO response = reservationService.create(dto);
         return ResponseEntity.ok(response);
     }
+
 
 
     @GetMapping("/stay/{stayId}")
@@ -77,6 +80,17 @@ public class ReservationController {
         reservationService.deleteById(id);
         return ResponseEntity.noContent().build();
     }
+
+    @GetMapping("/test-email")
+    public ResponseEntity<String> testEmail() {
+        String html = """
+        <h2>Prueba de envío</h2>
+        <p>Este es un correo de prueba desde Naturalia</p>
+    """;
+        iEmailService.sendReservationConfirmation("sr.westeban@gmail.com", html);
+        return ResponseEntity.ok("Correo enviado");
+    }
+
 
 
 

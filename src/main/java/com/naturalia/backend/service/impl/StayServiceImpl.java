@@ -180,6 +180,10 @@ public class StayServiceImpl implements IStayService {
                                 .icon(feature.getIcon())
                                 .build())
                         .collect(Collectors.toList()))
+                .host(UserDTO.builder()
+                        .id(stay.getHost().getId())
+                        .firstname(stay.getHost().getFirstname())
+                        .build())
                 .categories(stay.getCategories().stream()
                         .map(category -> CategoryDTO.builder()
                                 .id(category.getId())
@@ -203,7 +207,6 @@ public class StayServiceImpl implements IStayService {
                 .map(stayMapper::toDTO) // usa tu mapper para no devolver entidades completas
                 .toList();
     }
-
 
 
 }
