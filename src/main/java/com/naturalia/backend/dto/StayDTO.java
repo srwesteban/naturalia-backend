@@ -27,4 +27,7 @@ public class StayDTO {
     private List<CategoryDTO> categories;
 
     private UserDTO host;
+
+    private Double averageRating;
+
 }

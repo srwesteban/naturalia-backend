@@ -2,6 +2,7 @@ package com.naturalia.backend.controller;
 
 import com.naturalia.backend.dto.StayDTO;
 import com.naturalia.backend.dto.StayRequest;
+import com.naturalia.backend.dto.StaySummaryDTO;
 import com.naturalia.backend.entity.Stay;
 import com.naturalia.backend.exception.ResourceNotFoundException;
 import com.naturalia.backend.service.IStayService;
@@ -73,8 +74,14 @@ public class StayController {
         return ResponseEntity.ok(stayService.getSuggestionsByName(query));
     }
 
+    @GetMapping("/recommended")
+    public ResponseEntity<List<StayDTO>> getRecommendedStays() {
+        return ResponseEntity.ok(stayService.findRecommended());
+    }
 
-
-
+    @GetMapping("/summary")
+    public ResponseEntity<List<StaySummaryDTO>> getStaySummaries() {
+        return ResponseEntity.ok(stayService.findAllSummaries());
+    }
 
 }

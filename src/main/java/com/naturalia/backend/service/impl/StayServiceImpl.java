@@ -1,10 +1,7 @@
 package com.naturalia.backend.service.impl;
 
 import com.naturalia.backend.dto.*;
-import com.naturalia.backend.entity.Category;
-import com.naturalia.backend.entity.Feature;
-import com.naturalia.backend.entity.Stay;
-import com.naturalia.backend.entity.User;
+import com.naturalia.backend.entity.*;
 import com.naturalia.backend.exception.DuplicateNameException;
 import com.naturalia.backend.exception.ResourceNotFoundException;
 import com.naturalia.backend.mapper.StayMapper;
@@ -160,6 +157,16 @@ public class StayServiceImpl implements IStayService {
     }
 
     private StayDTO convertToDTO(Stay stay) {
+
+        double averageRating = 0.0;
+
+        if (stay.getReviews() != null && !stay.getReviews().isEmpty()) {
+            averageRating = stay.getReviews().stream()
+                    .mapToDouble(Review::getRating)
+                    .average()
+                    .orElse(0.0);
+        }
+
         return StayDTO.builder()
                 .id(stay.getId())
                 .name(stay.getName())
@@ -192,6 +199,7 @@ public class StayServiceImpl implements IStayService {
                                 .imageUrl(category.getImageUrl())
                                 .build())
                         .collect(Collectors.toList()))
+                .averageRating(averageRating)
                 .build();
     }
 
@@ -207,6 +215,31 @@ public class StayServiceImpl implements IStayService {
                 .map(stayMapper::toDTO) // usa tu mapper para no devolver entidades completas
                 .toList();
     }
+
+    @Override
+    public List<StayDTO> findRecommended() {
+        return stayRepository.findAll().stream()
+                .filter(stay -> {
+                    if (stay.getReviews() == null || stay.getReviews().isEmpty()) return false;
+                    double avg = stay.getReviews().stream().mapToDouble(Review::getRating).average().orElse(0.0);
+                    return avg >= 4.0;
+                })
+                .map(this::convertToDTO)
+                .toList();
+    }
+
+    @Override
+    public List<StaySummaryDTO> findAllSummaries() {
+        List<Stay> stays = stayRepository.findAll();
+        return stays.stream()
+                .map(stay -> new StaySummaryDTO(
+                        stay.getId(),
+                        stay.getName()
+                ))
+                .toList();
+    }
+
+
 
 
 }

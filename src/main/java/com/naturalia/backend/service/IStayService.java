@@ -2,6 +2,7 @@ package com.naturalia.backend.service;
 
 import com.naturalia.backend.dto.StayDTO;
 import com.naturalia.backend.dto.StayRequest;
+import com.naturalia.backend.dto.StaySummaryDTO;
 import com.naturalia.backend.entity.Stay;
 import com.naturalia.backend.exception.ResourceNotFoundException;
 
@@ -32,6 +33,11 @@ public interface IStayService {
     List<Stay> findAvailableStays(LocalDate checkIn, LocalDate checkOut);
 
     List<StayDTO> getSuggestionsByName(String query);
+
+    List<StayDTO> findRecommended();
+
+    List<StaySummaryDTO> findAllSummaries();
+
 
 
 
