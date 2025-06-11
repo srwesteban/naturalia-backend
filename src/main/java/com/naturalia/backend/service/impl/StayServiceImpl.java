@@ -14,6 +14,7 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.time.LocalDate;
 import java.util.List;
@@ -212,7 +213,7 @@ public class StayServiceImpl implements IStayService {
     public List<StayDTO> getSuggestionsByName(String query) {
         return stayRepository.findByNameContainingIgnoreCase(query)
                 .stream()
-                .map(stayMapper::toDTO) // usa tu mapper para no devolver entidades completas
+                .map(stayMapper::toDTO)
                 .toList();
     }
 
@@ -239,6 +240,92 @@ public class StayServiceImpl implements IStayService {
                 .toList();
     }
 
+    @Override
+    public List<StayListCardDTO> findAllListCards() {
+        List<Stay> stays = stayRepository.findAllWithCategories();
+
+        return stays.stream().map(stay -> {
+            List<CategoryTitleDTO> categoryTitles = stay.getCategories().stream()
+                    .map(cat -> new CategoryTitleDTO(cat.getTitle()))
+                    .collect(Collectors.toList());
+
+            return StayListCardDTO.builder()
+                    .id(stay.getId())
+                    .name(stay.getName())
+                    .description(stay.getDescription())
+                    .imageUrl(
+                            stay.getImages() != null && !stay.getImages().isEmpty()
+                                    ? stay.getImages().get(0)
+                                    : null
+                    )
+                    .location(stay.getLocation())
+                    .pricePerNight(stay.getPricePerNight())
+                    .categories(categoryTitles)
+                    .build();
+        }).collect(Collectors.toList());
+    }
+
+
+    @Override
+    public List<StayListCardDTO> searchAvailableLight(LocalDate checkIn, LocalDate checkOut) {
+        List<Stay> stays = stayRepository.findAvailableStays(checkIn, checkOut);
+
+        return stays.stream().map(stay -> StayListCardDTO.builder()
+                .id(stay.getId())
+                .name(stay.getName())
+                .description(stay.getDescription())
+                .imageUrl((stay.getImages() != null && !stay.getImages().isEmpty()) ? stay.getImages().get(0) : null)
+                .location(stay.getLocation())
+                .pricePerNight(stay.getPricePerNight())
+                .build()
+        ).collect(Collectors.toList());
+    }
+
+
+    @Override
+    @Transactional
+    public void updateStay(Long id, StayUpdateDTO dto) {
+        Stay stay = stayRepository.findById(id)
+                .orElseThrow(() -> new ResourceNotFoundException("Stay not found"));
+
+        stay.setName(dto.getName());
+        stay.setDescription(dto.getDescription());
+        stay.setLocation(dto.getLocation());
+        stay.setImages(dto.getImages());
+        stay.setCapacity(dto.getCapacity());
+        stay.setPricePerNight(dto.getPricePerNight());
+        stay.setBedrooms(dto.getBedrooms());
+        stay.setBeds(dto.getBeds());
+        stay.setBathrooms(dto.getBathrooms());
+        stay.setLatitude(dto.getLatitude());
+        stay.setLongitude(dto.getLongitude());
+
+        if (dto.getHostId() != null) {
+            User host = userRepository.findById(dto.getHostId())
+                    .orElseThrow(() -> new ResourceNotFoundException("Host not found"));
+            stay.setHost(host);
+        }
+
+        if (dto.getCategoryIds() != null) {
+            List<Category> categories = categoryRepository.findAllById(dto.getCategoryIds());
+            stay.setCategories(categories);
+        }
+
+        if (dto.getFeatureIds() != null) {
+            List<Feature> features = featureRepository.findAllById(dto.getFeatureIds());
+            stay.setFeatures(features);
+        }
+
+        stayRepository.save(stay);
+    }
+
+    @Override
+    public List<StayDTO> findByHostId(Long hostId) {
+        List<Stay> stays = stayRepository.findByHostId(hostId);
+        return stays.stream()
+                .map(this::convertToDTO)
+                .toList();
+    }
 
 
 

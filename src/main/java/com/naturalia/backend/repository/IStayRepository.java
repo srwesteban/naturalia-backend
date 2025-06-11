@@ -48,8 +48,31 @@ public interface IStayRepository extends JpaRepository<Stay, Long> {
                 WHERE LOWER(s.name) LIKE LOWER(CONCAT('%', :query, '%'))
             """)
     List<Stay> findByNameContainingIgnoreCase(@Param("query") String query);
+
     @Query("SELECT COUNT(s) > 0 FROM Stay s JOIN s.categories c WHERE c = :category")
     boolean existsByCategory(@Param("category") Category category);
+
+    @Query(value = """
+                SELECT 
+                    s.id,
+                    s.name,
+                    s.description,
+                    (
+                        SELECT si.image_url
+                        FROM stay_images si
+                        WHERE si.stay_id = s.id
+                        LIMIT 1
+                    ) AS image_url,
+                    s.location,
+                    s.price_per_night
+                FROM stays s
+            """, nativeQuery = true)
+    List<Object[]> findRawStayListCards();
+
+    @Query("SELECT DISTINCT s FROM Stay s LEFT JOIN FETCH s.categories")
+    List<Stay> findAllWithCategories();
+
+    List<Stay> findByHostId(Long hostId);
 
 
 }

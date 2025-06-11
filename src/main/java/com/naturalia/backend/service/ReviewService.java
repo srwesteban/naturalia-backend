@@ -7,8 +7,8 @@ import com.naturalia.backend.entity.Review;
 import com.naturalia.backend.entity.Stay;
 import com.naturalia.backend.entity.User;
 import com.naturalia.backend.repository.IReservationRepository;
-import com.naturalia.backend.repository.IStayRepository;
 import com.naturalia.backend.repository.IReviewRepository;
+import com.naturalia.backend.repository.IStayRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
@@ -33,9 +33,10 @@ public class ReviewService {
         Stay stay = stayRepository.findById(request.getStayId())
                 .orElseThrow(() -> new RuntimeException("Stay not found"));
 
-        if (!canUserReview(user, request.getStayId())) {
-            throw new RuntimeException("User not allowed to review this stay");
-        }
+//        if (!canUserReview(user, request.getStayId())) {
+//            throw new RuntimeException("Solo puedes dejar reseña si alguna vez hiciste una reserva en este alojamiento.");
+//        }
+
 
         Review review = Review.builder()
                 .user(user)

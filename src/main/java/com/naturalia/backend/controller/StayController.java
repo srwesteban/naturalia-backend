@@ -1,11 +1,9 @@
 package com.naturalia.backend.controller;
 
-import com.naturalia.backend.dto.StayDTO;
-import com.naturalia.backend.dto.StayRequest;
-import com.naturalia.backend.dto.StaySummaryDTO;
+import com.naturalia.backend.dto.*;
 import com.naturalia.backend.entity.Stay;
-import com.naturalia.backend.exception.ResourceNotFoundException;
 import com.naturalia.backend.service.IStayService;
+import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.format.annotation.DateTimeFormat;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -47,11 +45,30 @@ public class StayController {
         return ResponseEntity.ok(updated);
     }
 
-    @DeleteMapping("/{id}")
-    public ResponseEntity<Void> deleteStay(@PathVariable Long id) {
-        stayService.delete(id);
-        return ResponseEntity.noContent().build();
+    @PutMapping("/{id}/full")
+    public ResponseEntity<Void> updateStay(@PathVariable Long id, @RequestBody StayUpdateDTO dto) {
+        stayService.updateStay(id, dto);
+        return ResponseEntity.ok().build();
     }
+
+    @DeleteMapping("/{id}")
+    public ResponseEntity<?> deleteStay(@PathVariable Long id) {
+        try {
+            stayService.delete(id);
+            return ResponseEntity.noContent().build();
+        } catch (DataIntegrityViolationException e) {
+            return ResponseEntity.status(HttpStatus.CONFLICT)
+                    .body("Este alojamiento tiene reservas activas y no puede eliminarse.");
+        } catch (Exception e) {
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
+                    .body("Error al eliminar el alojamiento.");
+        }
+    }
+
+
+
+
+
 
     @GetMapping("/search")
     public ResponseEntity<List<Stay>> searchAvailableStays(
@@ -65,6 +82,19 @@ public class StayController {
         List<Stay> availableStays = stayService.findAvailableStays(checkIn, checkOut);
         return ResponseEntity.ok(availableStays);
     }
+
+    @GetMapping("/search-light")
+    public ResponseEntity<List<StayListCardDTO>> searchAvailableLight(
+            @RequestParam @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) LocalDate checkIn,
+            @RequestParam @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) LocalDate checkOut
+    ) {
+        if (checkIn == null || checkOut == null || checkOut.isBefore(checkIn)) {
+            return ResponseEntity.badRequest().build();
+        }
+
+        return ResponseEntity.ok(stayService.searchAvailableLight(checkIn, checkOut));
+    }
+
 
     @GetMapping("/suggestions")
     public ResponseEntity<List<StayDTO>> getSuggestions(@RequestParam String query) {
@@ -83,5 +113,17 @@ public class StayController {
     public ResponseEntity<List<StaySummaryDTO>> getStaySummaries() {
         return ResponseEntity.ok(stayService.findAllSummaries());
     }
+
+    @GetMapping("/list-cards")
+    public ResponseEntity<List<StayListCardDTO>> getStayListCards() {
+        return ResponseEntity.ok(stayService.findAllListCards());
+    }
+
+    @GetMapping("/host/{hostId}")
+    public ResponseEntity<List<StayDTO>> getStaysByHost(@PathVariable Long hostId) {
+        List<StayDTO> stays = stayService.findByHostId(hostId);
+        return ResponseEntity.ok(stays);
+    }
+
 
 }

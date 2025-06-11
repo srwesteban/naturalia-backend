@@ -48,11 +48,6 @@ public class User implements UserDetails {
 
     // === Security ===
 
-//    @Override
-//    public Collection<? extends GrantedAuthority> getAuthorities() {
-//        return List.of(new SimpleGrantedAuthority("ROLE_" + role.name()));
-//    }
-
     @Override
     public Collection<? extends GrantedAuthority> getAuthorities() {
         if (role == null) {
@@ -60,6 +55,7 @@ public class User implements UserDetails {
         }
         return List.of(new SimpleGrantedAuthority("ROLE_" + role.name()));
     }
+
 
 
     @Override

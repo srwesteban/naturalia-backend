@@ -61,6 +61,10 @@ public class AuthenticationService {
         extraClaims.put("role", user.getRole().name());
         extraClaims.put("firstname", user.getFirstname());
         extraClaims.put("email", user.getEmail());
+        extraClaims.put("authorities", user.getAuthorities().stream()
+                .map(Object::toString)
+                .toList());
+
         return jwtService.generateToken(extraClaims, user);
     }
 }

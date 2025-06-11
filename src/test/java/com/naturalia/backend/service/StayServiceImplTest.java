@@ -23,22 +23,22 @@ public class StayServiceImplTest {
 
     private List<String> fakeImageList;
 
-    @BeforeEach
-    void setUp() {
-        stayRepository = mock(IStayRepository.class);
-        featureRepository = mock(IFeatureRepository.class);
-        categoryRepository = mock(ICategoryRepository.class);
-        userRepository = mock(IUserRepository.class);
-
-        stayServiceImpl = new StayServiceImpl(
-                stayRepository,
-                featureRepository,
-                categoryRepository,
-                userRepository
-        );
-
-        fakeImageList = List.of("https://image1.jpg", "https://image2.jpg");
-    }
+//    @BeforeEach
+//    void setUp() {
+//        stayRepository = mock(IStayRepository.class);
+//        featureRepository = mock(IFeatureRepository.class);
+//        categoryRepository = mock(ICategoryRepository.class);
+//        userRepository = mock(IUserRepository.class);
+//
+//        stayServiceImpl = new StayServiceImpl(
+//                stayRepository,
+//                featureRepository,
+//                categoryRepository,
+//                userRepository
+//        );
+//
+//        fakeImageList = List.of("https://image1.jpg", "https://image2.jpg");
+//    }
 
     @Test
     void saveStay_shouldReturnSavedStay() {

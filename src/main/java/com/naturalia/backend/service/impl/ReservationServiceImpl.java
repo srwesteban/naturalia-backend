@@ -123,6 +123,9 @@ public class ReservationServiceImpl implements IReservationService {
 
     @Override
     public void deleteById(Long id) {
+        if (!reservationRepository.existsById(id)) {
+            throw new ResourceNotFoundException("Reserva no encontrada con ID: " + id);
+        }
         reservationRepository.deleteById(id);
     }
 

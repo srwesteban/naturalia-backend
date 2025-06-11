@@ -1,8 +1,6 @@
 package com.naturalia.backend.service;
 
-import com.naturalia.backend.dto.StayDTO;
-import com.naturalia.backend.dto.StayRequest;
-import com.naturalia.backend.dto.StaySummaryDTO;
+import com.naturalia.backend.dto.*;
 import com.naturalia.backend.entity.Stay;
 import com.naturalia.backend.exception.ResourceNotFoundException;
 
@@ -37,6 +35,18 @@ public interface IStayService {
     List<StayDTO> findRecommended();
 
     List<StaySummaryDTO> findAllSummaries();
+
+    List<StayListCardDTO> findAllListCards();
+
+    List<StayListCardDTO> searchAvailableLight(LocalDate checkIn, LocalDate checkOut);
+
+    void updateStay(Long id, StayUpdateDTO dto);
+
+    List<StayDTO> findByHostId(Long hostId);
+
+
+
+
 
 
 
