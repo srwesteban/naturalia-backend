@@ -1,372 +1,175 @@
-🌿 Naturalia - Sprint 1 & 2
+# 🌿 Naturalia - Bitácora Técnica
 
-Aplicación de reservas enfocada en glamping y casas campestres. Proyecto desarrollado como parte del Desafío Profesional con enfoque fullstack (Spring Boot + React).
-
-✅ Historias de Usuario Completadas (Sprint 1)
-
-ID
-
-Historia
-
-Estado
-
-#1
-
-Header con logo y barra de navegación
-
-✅
-
-#2
-
-Fondo con buscador, categorías, recomendaciones
-
-✅
-
-#3
-
-Crear alojamiento + validación + Cloudinary
-
-✅
-
-#4
-
-Listado aleatorio (máx. 10) con layout 2x5
-
-✅
-
-#5
-
-Detalle del producto con info e imágenes
-
-✅
-
-#6
-
-Galería con modal, diseño 1+2x2, responsivo
-
-✅
-
-#7
-
-Footer con logo, año, responsive
-
-✅
-
-#8
-
-Paginación funcional (Inicio, Ant, Sig)
-
-✅
-
-#9
-
-Panel admin con bloqueo en móvil
-
-✅
-
-#10
-
-Lista de productos con acciones CRUD
-
-✅
-
-#11
-
-Eliminación con confirmación visual
-
-✅
-
-✅ Historias de Usuario Completadas (Sprint 2)
-
-ID
-
-Historia
-
-Estado
-
-#12
-
-Categorizar productos
-
-✅
-
-#13
-
-Registrar usuario
-
-✅
-
-#14
-
-Identificar usuario (Login)
-
-✅
-
-#15
-
-Cerrar sesión
-
-✅
-
-#16
-
-Identificar administrador
-
-✅
-
-#17
-
-Administrar características de producto
-
-✅
-
-#18
-
-Visualizar características en detalle
-
-✅
-
-#19
-
-Confirmación por correo (opcional)
-
-❌
-
-#20
-
-Filtro por categorías
-
-✅
-
-#21
-
-Crear nueva categoría
-
-✅
-
-📦 Estructura del Proyecto
-
-Backend (Java Spring Boot)
-
-Base de datos: PostgreSQL en Render
-
-Seguridad: Spring Security + JWT
-
-Validaciones con DTOs
-
-Documentación Swagger (/swagger-ui.html)
-
-Tests:
-
-✅ Unitarios con JUnit + Mockito
-
-✅ Controladores con @WebMvcTest + MockMvc
-
-Frontend (React + Vite)
-
-Diseño responsivo con CSS Modules
-
-Uso de Cloudinary para carga de imágenes
-
-Rutas: /, /create, /stays/:id, /administracion
-
-Componentes: Header, Footer, Gallery, StayListSection, AdminPanel, etc.
-
-Login y registro con JWT, avatar de iniciales, filtros dinámicos
-
-🧪 Pruebas automatizadas
-
-Casos de prueba (Sprint 2)
-
-UserControllerTest
-
-GET /users → Lista de usuarios
-
-GET /users/hosts → Lista de hosts
-
-PUT /users/{id}/role → Actualiza rol
-
-FeatureControllerTest
-
-GET /features → Lista de características
-
-POST /features → Crear característica
-
-PUT /features/{id} → Editar característica
-
-DELETE /features/{id} → Eliminar característica
-
-CategoryControllerTest
-
-GET /categories → Lista de categorías
-
-POST /categories → Crear categoría
-
-DELETE /categories/{id} → Eliminar categoría
-
-StayControllerTest
-
-GET /stays → Lista de estancias
-
-GET /stays/{id} → Estancia por ID
-
-POST /stays → Crear estancia
-
-PUT /stays/{id} → Editar estancia
-
-DELETE /stays/{id} → Eliminar estancia
-
-Cobertura
-
-Todos los controladores cubiertos
-
-Pruebas de estado HTTP, respuestas y servicios mockeados
-
-📄 Documentación técnica
-
-Swagger UI: http://localhost:8080/swagger-ui/index.html#/
-
-Bitácora técnica, tabla de endpoints y pruebas unitarias en /docs
-
-🚀 Cómo ejecutar el proyecto
-
-Backend:
-
-cd naturalia-backend
-./mvnw spring-boot:run
-
-Frontend:
-
-cd naturalia-frontend
-npm install
-npm run dev
-
-🎨 Diseño y marca
-
-Logo: https://res.cloudinary.com/dy6udvu4e/image/upload/v1748229233/Logo_pf2jgo.png
-
-Paleta: https://www.pokemonpalette.com/leafeon
-
-1: rgb(218, 188, 134)
-
-2: rgb(49, 87, 68)
-
-3: rgb(108, 188, 140)
-
-👤 Roles del equipo
-
-TL Backend: William David Esteban Mora
-
-TL Frontend: William David Esteban Mora
-
-TL BBDD: William David Esteban Mora
-
-TL Infra: William David Esteban Mora
-
-📄 Repositorios
-
-Backend: https://github.com/srwesteban/naturalia-backend
-
-Frontend: https://github.com/srwesteban/naturalia-frontend
-
-✅ Sprint 2 finalizado con éxito. Proyecto listo para entrega.
-
-
-
-# 🌿 Naturalia - Sprint 3
-
-> Última actualización: 2025-06-05
+Naturalia es una aplicación web de reservas orientada a alojamientos rurales, como glampings y casas campestres. El sistema permite a usuarios buscar, visualizar y reservar estancias disponibles, así como gestionar favoritos y dejar reseñas. Está desarrollada con un enfoque fullstack utilizando Java Spring Boot para el backend y React + Vite para el frontend, con una arquitectura escalable, segura y responsiva.
 
 ---
 
-## 📘 Bitácora de Desarrollo
+## Índice
 
-**Sprint 3** tuvo como foco principal mejorar la experiencia del usuario mediante nuevas funcionalidades clave como búsqueda avanzada, favoritos, políticas por producto, y administración de categorías.
-
-**Definición del proyecto:**  
-Plataforma web de reservas de glampings y casas campestres. Los usuarios pueden buscar alojamientos por fechas o nombre, ver detalles del producto con disponibilidad, guardar favoritos, y realizar reservas. Los administradores pueden gestionar productos, categorías y políticas.
-
----
-
-## ✅ Historias de Usuario Completadas
-
-| ID   | Historia                        | Estado |
-|------|----------------------------------|--------|
-| #22  | Realizar búsqueda                | ✅     |
-| #23  | Visualizar disponibilidad        | ✅     |
-| #24  | Marcar como favorito             | ✅     |
-| #25  | Listar productos favoritos       | ✅     |
-| #26  | Ver bloque de políticas          | ✅     |
-| #27  | Compartir productos              | ✅     |
-| #29  | Eliminar categoría               | ✅     |
+- [Tecnologías y herramientas utilizadas](#tecnologías-y-herramientas-utilizadas)
+- [Paleta de colores principal](#paleta-de-colores-principal)
+- [🟢 Sprint 1](#-sprint-1)
+- [🟡 Sprint 2](#-sprint-2)
+- [🔵 Sprint 3](#-sprint-3)
+- [🟣 Sprint 4](#-sprint-4)
+- [📄 Documentación técnica](#-documentación-técnica)
+- [🚀 Despliegue](#-despliegue)
+- [🎨 Diseño y marca](#-diseño-y-marca)
+- [Comentarios finales](#comentarios-finales)
 
 ---
 
-## 🧪 Planificación y Ejecución de Pruebas
+## Tecnologías y herramientas utilizadas
 
-### #22 Realizar búsqueda
-
-| Caso de prueba                             | Resultado |
-|-------------------------------------------|-----------|
-| Buscar sin texto ni fechas → mostrar todo | ✅         |
-| Buscar por nombre parcial → sugerencias   | ✅         |
-| Click en sugerencia → realiza búsqueda    | ✅         |
-| Campos requeridos vacíos → ignora búsqueda| ✅         |
-| Feedback al buscar (loading visual)       | ✅         |
-
-### #23 Visualizar disponibilidad
-
-| Caso de prueba                                       | Resultado |
-|-----------------------------------------------------|-----------|
-| Fechas reservadas aparecen en otro color            | ✅         |
-| Usuario no autenticado puede ver disponibilidad     | ✅         |
-| Errores al cargar → mensaje visible + retry         | ✅         |
-
-### #24 Marcar como favorito
-
-| Caso de prueba                          | Resultado |
-|----------------------------------------|-----------|
-| Icono visible en cards de productos    | ✅         |
-| Click → añade a favoritos              | ✅         |
-| Usuario no logueado → no se permite    | ✅         |
-| Estado persiste al refrescar           | ✅         |
-
-### #25 Listar productos favoritos
-
-| Caso de prueba                                      | Resultado |
-|----------------------------------------------------|-----------|
-| Acceso desde menú del usuario                      | ✅         |
-| Eliminar favorito desde la lista                   | ✅         |
-| Lista vacía → mensaje "sin favoritos"              | ✅         |
-| Diseño responsive correcto                         | ✅         |
-
-### #26 Ver bloque de políticas
-
-| Caso de prueba                                  | Resultado |
-|------------------------------------------------|-----------|
-| Título visible, subrayado                      | ✅         |
-| Políticas divididas en 3 columnas              | ✅         |
-| Información real cargada del backend           | ✅         |
-
-### #27 Compartir productos
-
-| Caso de prueba                           | Resultado |
-|-----------------------------------------|-----------|
-| Botón visible en detalle de producto    | ✅         |
-| Al hacer click → se abre modal redes    | ✅         |
-| Copia de link disponible                | ✅         |
-| (Integración real futura - placeholder) | ⚠️ Simulado |
-
-### #29 Eliminar categoría
-
-| Caso de prueba                                                | Resultado |
-|--------------------------------------------------------------|-----------|
-| Botón eliminar visible en panel                              | ✅         |
-| Modal de confirmación con advertencia                        | ✅         |
-| No se puede eliminar si está en uso → muestra mensaje claro  | ✅         |
+- **Backend:** Spring Boot, Spring Security, JWT, PostgreSQL (Render), JPA/Hibernate
+- **Frontend:** React, Vite, React Router, react-datepicker, react-toastify, react-icons
+- **Otros:** Cloudinary (imágenes), EmailService (confirmaciones), Swagger (documentación), CSS Modules
 
 ---
 
-## 🧾 Conclusión del Sprint
+## Paleta de colores principal
 
-Todas las funcionalidades planificadas en el Sprint 3 se desarrollaron y probaron satisfactoriamente. Se mejoró significativamente la usabilidad con interacciones más intuitivas y se fortaleció la experiencia del usuario.
+- `rgb(218, 188, 134)` – arena cálida
+- `rgb(49, 87, 68)` – verde profundo
+- `rgb(108, 188, 140)` – verde natural
+
+---
+
+# 🟢 Sprint 1
+
+### Definición del proyecto
+Inicio del desarrollo con enfoque en estructura, visualización de productos y administración básica.
+
+### Historias completadas
+- Header fijo con logo y navegación.
+- Home con buscador, categorías y recomendaciones.
+- Registro de productos desde el panel admin.
+- Visualización aleatoria (máx. 10) con galería.
+- Detalle del producto con layout 1+2x2.
+- Footer responsive y paginación funcional.
+- Panel de administración (bloqueado en móvil).
+- Lista de productos con acciones CRUD.
+
+### Planificación y ejecución de las pruebas - Etapa 1: Preparación del entorno y pruebas básicas
+- Configuración inicial de `@SpringBootTest` y `@AutoConfigureMockMvc` para habilitar tests integrados con MockMvc, simulando peticiones HTTP a controladores REST.
+- Implementación de pruebas unitarias para controladores sencillos con Mockito y MockMvc para verificar respuestas HTTP.
+- Verificación de rutas básicas y validaciones en controladores de autenticación y categorías.
+
+**Aprendizajes:**
+Se comprobó la necesidad de tokens JWT para la mayoría de endpoints protegidos, validación de datos de entrada y manejo de errores HTTP 4xx y 5xx.
+
+---
+
+# 🟡 Sprint 2
+
+### Definición del proyecto
+Implementación de autenticación, gestión de usuarios y estructura de datos dinámica.
+
+### Historias completadas
+- Registro/login con JWT, validación, avatar.
+- Panel admin: asignar/quitar roles.
+- Categorías: crear, asignar, filtrar productos.
+- Características: CRUD desde el panel.
+- Vista de características en detalle de producto.
+- Filtrado múltiple por categorías en home.
+
+### Planificación y ejecución de las pruebas - Etapa 2: Testing con seguridad y autenticación JWT
+- Creación de tests que primero registran usuarios, luego hacen login para obtener token JWT.
+- Uso del token para autorizar peticiones a endpoints protegidos en tests de integración (ejemplo: crear categorías, gestionar favoritos, realizar reservas).
+- Validación de errores comunes como HTTP 403 (Forbidden) al no enviar token.
+- Automatización del flujo: registrar usuario → login → obtener token → usar token en cabecera Authorization.
+
+**Herramientas:**
+- MockMvc para simular HTTP requests.
+- ObjectMapper para serializar/deserializar JSON.
+- Uso explícito de header `"Authorization: Bearer <token>"` en tests.
+
+---
+
+# 🔵 Sprint 3
+
+### Definición del proyecto
+Mejorar experiencia del usuario: búsqueda, favoritos, políticas y reviews.
+
+### Historias completadas
+- Búsqueda por nombre y fechas con sugerencias.
+- Visualización de disponibilidad en detalle.
+- Favoritos persistentes y listables por usuario.
+- Políticas editables por anfitrión.
+- Reviews visibles solo para usuarios con reservas.
+- Media de puntuación en tiempo real.
+
+### Planificación y ejecución de las pruebas - Etapa 3: Pruebas unitarias de servicios con Mockito
+- Mockeo de repositorios JPA para aislar la lógica de negocio en servicios (`ServiceImpl`).
+- Validación de comportamientos: guardar, actualizar, eliminar entidades, y manejo de excepciones personalizadas (`ResourceNotFoundException`, `DuplicateNameException`).
+- Tests para servicios:
+    - `AuthServiceImpl` → registro y obtención del usuario autenticado.
+    - `CategoryServiceImpl` → creación, listado y eliminación con validación de relaciones.
+    - `FavoriteServiceImpl` → agregar, eliminar, listar favoritos, comprobación de existencia.
+    - `FeatureServiceImpl` → CRUD completo para características.
+    - `ReservationServiceImpl` → creación de reservas con validación de conflictos, cálculo de precio total, envío de emails.
+    - `StayServiceImpl` → creación, actualización, listado, filtrado y conversión DTO, incluyendo manejo de relaciones y autenticación.
+    - `UserServiceImpl` → gestión y cambio de roles, listado por rol.
+
+**Estrategias:**
+- Uso de `@Mock` y `@InjectMocks` para aislar servicios.
+- Mockito para configurar respuestas (`when(...).thenReturn(...)`).
+- Asserts específicos para validar resultados y excepciones.
+- Verificación de llamadas a métodos con `verify(...)`.
+
+---
+
+# 🟣 Sprint 4
+
+### Definición del proyecto
+Flujo completo de reservas, historial, confirmaciones e integración con WhatsApp.
+
+### Historias completadas
+- Selección de fechas con validación.
+- Interfaz de reserva con resumen y feedback.
+- Registro de reservas en backend.
+- Historial con diferenciación de pasadas/futuras.
+- Botón fijo de WhatsApp.
+- Envío automático de confirmación por correo.
+
+### Planificación y ejecución de las pruebas - Etapa 4: Tests específicos y casos límite
+- Manejo de errores en pruebas: verificar que se lanzan excepciones adecuadas ante datos inválidos o estados imposibles (ej. fechas de reserva incoherentes, entidades no encontradas, nombres duplicados).
+- Tests para endpoints que dependen de la autenticación: verificar rechazo sin token, aceptación con token válido.
+- Pruebas para cálculos lógicos, por ejemplo:
+    - Número de noches y precio total en reservas.
+    - Promedios de puntuación en estancias.
+- Asegurar que las relaciones entre entidades (features, categorías, host) se gestionan correctamente y se reflejan en los DTOs.
+
+---
+
+# 📄 Documentación técnica
+
+- Swagger UI disponible en: [http://localhost:8080/swagger-ui/index.html#/](http://localhost:8080/swagger-ui/index.html#/)
+
+---
+
+# 🚀 Despliegue
+
+- El frontend está desplegado en **Vercel** y es accesible en:
+  [https://naturalia-frontend.vercel.app/](https://naturalia-frontend.vercel.app/)
+
+- El backend y la base de datos PostgreSQL están desplegados en **Render**, utilizando una imagen Docker para facilitar la administración y escalabilidad.
+
+---
+
+# 🎨 Diseño y marca
+
+- Logo oficial:
+  ![Logo Naturalia](https://res.cloudinary.com/dy6udvu4e/image/upload/v1748229233/Logo_pf2jgo.png)
+
+- Paleta de colores:
+  [https://www.pokemonpalette.com/leafeon](https://www.pokemonpalette.com/leafeon)
+
+---
+
+# Comentarios finales
+
+Este proyecto ha sido desarrollado bajo un enfoque ágil con sprints claramente definidos que han permitido iterar funcionalidades y pruebas de manera organizada y eficiente, asegurando calidad en el código y experiencia de usuario. La integración completa de autenticación JWT, pruebas con MockMvc y Mockito, y la atención a casos borde en tests confirman un proceso profesional orientado a la escalabilidad y mantenimiento.
+
+---
+
