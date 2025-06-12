@@ -3,22 +3,26 @@ package com.naturalia.backend.controller;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.naturalia.backend.authentication.AuthenticationRequest;
 import com.naturalia.backend.authentication.RegisterRequest;
-import com.naturalia.backend.entity.Category;
+import com.naturalia.backend.config.TestSecurityConfig;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
 import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.context.annotation.Import;
 import org.springframework.http.MediaType;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.MvcResult;
+
+
+import java.time.LocalDate;
 
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.*;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.*;
 
 @SpringBootTest
 @AutoConfigureMockMvc
-public class CategoryControllerTest {
+public class ReservationControllerTest {
 
     @Autowired
     private MockMvc mockMvc;
@@ -26,16 +30,13 @@ public class CategoryControllerTest {
     @Autowired
     private ObjectMapper objectMapper;
 
-    private String getAuthToken() throws Exception {
-        String unique = String.valueOf(System.currentTimeMillis());
+    @Test
+    @DisplayName("✅ Obtener reservas propias con token válido")
+    void shouldGetReservationsWhenAuthenticated() throws Exception {
+        // 1. Registrar usuario
         RegisterRequest register = new RegisterRequest(
-                "Test",
-                "User",
-                "user" + unique + "@mail.com",
-                "123456",
-                "CC",
-                unique, // documento único
-                "+573001010101"
+                "Test", "User", "reservas" + System.currentTimeMillis() + "@mail.com", "123456",
+                "CC", "1010101010", "+573001010101"
         );
 
         mockMvc.perform(post("/auth/register")
@@ -43,6 +44,7 @@ public class CategoryControllerTest {
                         .content(objectMapper.writeValueAsString(register)))
                 .andExpect(status().isOk());
 
+        // 2. Login
         AuthenticationRequest login = new AuthenticationRequest(register.getEmail(), register.getPassword());
 
         MvcResult result = mockMvc.perform(post("/auth/login")
@@ -51,37 +53,11 @@ public class CategoryControllerTest {
                 .andExpect(status().isOk())
                 .andReturn();
 
-        return objectMapper.readTree(result.getResponse().getContentAsString())
-                .get("token").asText();
-    }
+        String token = objectMapper.readTree(result.getResponse().getContentAsString()).get("token").asText();
 
-    @Test
-    @DisplayName("✅ Crear, listar y eliminar categoría")
-    void categoryCRUD() throws Exception {
-        String token = getAuthToken();
-
-        // Crear categoría
-        Category category = new Category(null, "Glamping", "Naturaleza y lujo", "glamping.jpg");
-
-        MvcResult result = mockMvc.perform(post("/categories")
-                        .header("Authorization", "Bearer " + token)
-                        .contentType(MediaType.APPLICATION_JSON)
-                        .content(objectMapper.writeValueAsString(category)))
-                .andExpect(status().isOk())
-                .andExpect(jsonPath("$.title").value("Glamping"))
-                .andReturn();
-
-        Long categoryId = objectMapper.readTree(result.getResponse().getContentAsString())
-                .get("id").asLong();
-
-        // Listar categorías
-        mockMvc.perform(get("/categories")
+        // 3. Obtener reservas (aunque no tenga ninguna)
+        mockMvc.perform(get("/reservations/mine")
                         .header("Authorization", "Bearer " + token))
                 .andExpect(status().isOk());
-
-        // Eliminar categoría
-        mockMvc.perform(delete("/categories/" + categoryId)
-                        .header("Authorization", "Bearer " + token))
-                .andExpect(status().isNoContent());
     }
 }

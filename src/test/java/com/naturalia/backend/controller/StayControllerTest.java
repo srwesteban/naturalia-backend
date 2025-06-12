@@ -1,133 +1,287 @@
 package com.naturalia.backend.controller;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
+import com.naturalia.backend.authentication.AuthenticationRequest;
+import com.naturalia.backend.authentication.RegisterRequest;
 import com.naturalia.backend.dto.StayDTO;
-import com.naturalia.backend.dto.StayListCardDTO;
 import com.naturalia.backend.dto.StayRequest;
-import com.naturalia.backend.service.IStayService;
-import org.junit.jupiter.api.DisplayName;
-import org.junit.jupiter.api.Test;
+import com.naturalia.backend.dto.StayUpdateDTO;
+import com.naturalia.backend.entity.Stay;
+import com.naturalia.backend.repository.IStayRepository;
+import com.naturalia.backend.repository.IUserRepository;
+import org.junit.jupiter.api.*;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
 import org.springframework.boot.test.context.SpringBootTest;
-import org.springframework.boot.test.mock.mockito.MockBean;
+import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.http.MediaType;
 import org.springframework.test.web.servlet.MockMvc;
+import org.springframework.test.web.servlet.MvcResult;
 
+import java.time.LocalDate;
 import java.util.List;
 
-import static org.mockito.ArgumentMatchers.any;
-import static org.mockito.Mockito.*;
+import static org.hamcrest.Matchers.*;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.*;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.*;
 
 @SpringBootTest
 @AutoConfigureMockMvc
+@TestMethodOrder(MethodOrderer.OrderAnnotation.class)
+@TestInstance(TestInstance.Lifecycle.PER_CLASS)
 public class StayControllerTest {
 
-    @Autowired
-    private MockMvc mockMvc;
+    @Autowired private MockMvc mockMvc;
+    @Autowired private ObjectMapper objectMapper;
+    @Autowired private IStayRepository stayRepository;
+    @Autowired private IUserRepository userRepository;
 
-    @MockBean
-    private IStayService stayService;
+    private String token;
+    private Long stayId;
+    private Long hostId;
 
-    @Autowired
-    private ObjectMapper objectMapper;
+    @BeforeAll
+    void setupAuthAndData() throws Exception {
+        String suffix = String.valueOf(System.currentTimeMillis());
+        RegisterRequest register = new RegisterRequest(
+                "Host", "Tester", "host" + suffix + "@mail.com", "123456",
+                "CC", suffix, "+573001234567"
+        );
 
-//    @Test
-//    @DisplayName("Debería crear un stay")
-//    void shouldCreateStay() throws Exception {
-//        StayRequest request = new StayRequest();
-//        StayDTO created = new StayDTO(1L, "Refugio del Bosque", "Descripción", List.of("img.jpg"), "Bosque", 2, 100.0, 1, 1, 1, 4.5, -74.2, List.of(), List.of());
-//
-//        when(stayService.create(any())).thenReturn(created);
-//
-//        mockMvc.perform(post("/stays")
-//                        .contentType(MediaType.APPLICATION_JSON)
-//                        .content(objectMapper.writeValueAsString(request)))
-//                .andExpect(status().isCreated())
-//                .andExpect(jsonPath("$.id").value(1))
-//                .andExpect(jsonPath("$.name").value("Refugio del Bosque"));
-//    }
+        mockMvc.perform(post("/auth/register")
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content(objectMapper.writeValueAsString(register)))
+                .andExpect(status().isOk());
 
-//    @Test
-//    @DisplayName("Debería retornar todos los stays")
-//    void shouldReturnAllStays() throws Exception {
-//        StayDTO s1 = new StayDTO(1L, "Cabaña", "Desc", List.of("img1.jpg"), "Montaña", 2, 120.0, 1, 1, 1, 4.5, -74.0, List.of(), List.of());
-//        StayDTO s2 = new StayDTO(2L, "Casa Campestre", "Desc", List.of("img2.jpg"), "Campo", 4, 200.0, 2, 2, 2, 4.8, -75.0, List.of(), List.of());
-//
-//        when(stayService.findAllDTOs()).thenReturn(List.of(s1, s2));
-//
-//        mockMvc.perform(get("/stays"))
-//                .andExpect(status().isOk())
-//                .andExpect(jsonPath("$.length()").value(2))
-//                .andExpect(jsonPath("$[0].name").value("Cabaña"))
-//                .andExpect(jsonPath("$[1].location").value("Campo"));
-//    }
+        AuthenticationRequest login = new AuthenticationRequest(register.getEmail(), register.getPassword());
+        MvcResult result = mockMvc.perform(post("/auth/login")
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content(objectMapper.writeValueAsString(login)))
+                .andExpect(status().isOk())
+                .andReturn();
 
-//    @Test
-//    @DisplayName("Debería retornar un stay por ID")
-//    void shouldReturnStayById() throws Exception {
-//        StayDTO stay = new StayDTO(3L, "EcoLodge", "Eco", List.of("img3.jpg"), "Selva", 3, 150.0, 1, 1, 1, 5.0, -76.0, List.of(), List.of());
-//
-//        when(stayService.findDTOById(3L)).thenReturn(stay);
-//
-//        mockMvc.perform(get("/stays/3"))
-//                .andExpect(status().isOk())
-//                .andExpect(jsonPath("$.name").value("EcoLodge"))
-//                .andExpect(jsonPath("$.location").value("Selva"));
-//    }
+        token = objectMapper.readTree(result.getResponse().getContentAsString()).get("token").asText();
+        hostId = userRepository.findByEmail(register.getEmail()).get().getId();
 
-//    @Test
-//    @DisplayName("Debería actualizar un stay")
-//    void shouldUpdateStay() throws Exception {
-//        StayRequest request = new StayRequest();
-//        StayDTO updated = new StayDTO(4L, "Modificado", "Desc", List.of("img.jpg"), "Zona nueva", 2, 110.0, 1, 1, 1, 4.3, -73.9, List.of(), List.of());
-//
-//        when(stayService.updateStay(eq(4L), any())).thenReturn(updated);
-//
-//        mockMvc.perform(put("/stays/4")
-//                        .contentType(MediaType.APPLICATION_JSON)
-//                        .content(objectMapper.writeValueAsString(request)))
-//                .andExpect(status().isOk())
-//                .andExpect(jsonPath("$.name").value("Modificado"))
-//                .andExpect(jsonPath("$.location").value("Zona nueva"));
-//    }
-
-    @Test
-    @DisplayName("Debería eliminar un stay")
-    void shouldDeleteStay() throws Exception {
-        doNothing().when(stayService).delete(5L);
-
-        mockMvc.perform(delete("/stays/5"))
-                .andExpect(status().isNoContent());
-
-        verify(stayService, times(1)).delete(5L);
+        // Crear un stay para pruebas si no hay alguno
+        List<Stay> stays = stayRepository.findAll();
+        if (stays.isEmpty()) {
+            Stay stay = new Stay();
+            stay.setName("Test Stay");
+            stay.setDescription("Stay para pruebas");
+            stay.setLocation("Colombia");
+            stay.setPricePerNight(150.0);
+            stay.setCapacity(3);
+            stay.setBedrooms(2);
+            stay.setBeds(2);
+            stay.setBathrooms(1);
+            stay.setLatitude(1.0);
+            stay.setLongitude(1.0);
+            stay.setHost(userRepository.findById(hostId).orElseThrow());
+            stayId = stayRepository.save(stay).getId();
+        } else {
+            stayId = stays.get(0).getId();
+        }
     }
 
     @Test
-    @DisplayName("Debería retornar los stays optimizados para el listado")
-    void shouldReturnListCardStays() throws Exception {
-        StayListCardDTO dto = StayListCardDTO.builder()
-                .id(1L)
-                .name("Eco Cabaña")
-                .description("Una experiencia natural")
-                .imageUrl("image1.jpg")
-                .location("Montaña")
-                .pricePerNight(150.0)
-                .build();
+    @Order(1)
+    @DisplayName("✅ Crear Stay")
+    void testCreateStay() throws Exception {
+        StayRequest request = new StayRequest();
+        request.setName("Nuevo Stay");
+        request.setDescription("Descripción Stay");
+        request.setLocation("Bogotá");
+        request.setPricePerNight(120.0);
+        request.setCapacity(4);
+        request.setBedrooms(2);
+        request.setBeds(2);
+        request.setBathrooms(1);
+        request.setLatitude(4.6);
+        request.setLongitude(-74.1);
+        request.setHostId(hostId);
 
-        when(stayService.findAllListCards()).thenReturn(List.of(dto));
+        mockMvc.perform(post("/stays")
+                        .header("Authorization", "Bearer " + token)
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content(objectMapper.writeValueAsString(request)))
+                .andExpect(status().isCreated())
+                .andExpect(jsonPath("$.name").value("Nuevo Stay"))
+                .andExpect(jsonPath("$.host.id").value(hostId));
+    }
 
+    @Test
+    @Order(2)
+    @DisplayName("✅ Obtener todos los stays")
+    void testGetAllStays() throws Exception {
+        mockMvc.perform(get("/stays"))
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$").isArray());
+    }
+
+    @Test
+    @Order(3)
+    @DisplayName("✅ Obtener stay por id")
+    void testGetStayById() throws Exception {
+        mockMvc.perform(get("/stays/{id}", stayId))
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$.id").value(stayId));
+    }
+
+    @Test
+    @Order(4)
+    @DisplayName("✅ Actualizar stay con StayRequest")
+    void testUpdateStay() throws Exception {
+        StayRequest request = new StayRequest();
+        request.setName("Stay Actualizado");
+        request.setDescription("Desc actualizada");
+        request.setLocation("Medellín");
+        request.setPricePerNight(130.0);
+        request.setCapacity(5);
+        request.setBedrooms(3);
+        request.setBeds(3);
+        request.setBathrooms(2);
+        request.setLatitude(6.2);
+        request.setLongitude(-75.6);
+        request.setHostId(hostId);
+
+        mockMvc.perform(put("/stays/{id}", stayId)
+                        .header("Authorization", "Bearer " + token)
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content(objectMapper.writeValueAsString(request)))
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$.name").value("Stay Actualizado"));
+    }
+
+    @Test
+    @Order(5)
+    @DisplayName("✅ Actualizar stay con StayUpdateDTO")
+    void testUpdateStayFull() throws Exception {
+        StayUpdateDTO dto = new StayUpdateDTO();
+        dto.setName("Stay Full Update");
+        dto.setDescription("Update completo");
+        dto.setLocation("Cartagena");
+        dto.setPricePerNight(140.0);
+        dto.setCapacity(6);
+        dto.setBedrooms(3);
+        dto.setBeds(4);
+        dto.setBathrooms(2);
+        dto.setLatitude(10.4);
+        dto.setLongitude(-75.5);
+        dto.setHostId(hostId);
+        // agrega más campos que tenga StayUpdateDTO si necesitas
+
+        mockMvc.perform(put("/stays/{id}/full", stayId)
+                        .header("Authorization", "Bearer " + token)
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content(objectMapper.writeValueAsString(dto)))
+                .andExpect(status().isOk());
+    }
+
+    @Test
+    @Order(6)
+    @DisplayName("✅ Buscar stays disponibles (search)")
+    void testSearchAvailableStays() throws Exception {
+        LocalDate checkIn = LocalDate.now().plusDays(1);
+        LocalDate checkOut = LocalDate.now().plusDays(3);
+
+        mockMvc.perform(get("/stays/search")
+                        .param("checkIn", checkIn.toString())
+                        .param("checkOut", checkOut.toString()))
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$").isArray());
+    }
+
+    @Test
+    @Order(7)
+    @DisplayName("✅ Buscar stays disponibles (search-light)")
+    void testSearchAvailableLight() throws Exception {
+        LocalDate checkIn = LocalDate.now().plusDays(1);
+        LocalDate checkOut = LocalDate.now().plusDays(3);
+
+        mockMvc.perform(get("/stays/search-light")
+                        .param("checkIn", checkIn.toString())
+                        .param("checkOut", checkOut.toString()))
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$").isArray());
+    }
+
+    @Test
+    @Order(8)
+    @DisplayName("✅ Obtener sugerencias")
+    void testGetSuggestions() throws Exception {
+        mockMvc.perform(get("/stays/suggestions")
+                        .param("query", "Test"))
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$").isArray());
+    }
+
+    @Test
+    @Order(9)
+    @DisplayName("✅ Obtener stays recomendados")
+    void testGetRecommended() throws Exception {
+        mockMvc.perform(get("/stays/recommended"))
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$").isArray());
+    }
+
+    @Test
+    @Order(10)
+    @DisplayName("✅ Obtener resumen stays")
+    void testGetStaySummaries() throws Exception {
+        mockMvc.perform(get("/stays/summary"))
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$").isArray());
+    }
+
+    @Test
+    @Order(11)
+    @DisplayName("✅ Obtener list cards")
+    void testGetStayListCards() throws Exception {
         mockMvc.perform(get("/stays/list-cards"))
                 .andExpect(status().isOk())
-                .andExpect(jsonPath("$[0].id").value(1))
-                .andExpect(jsonPath("$[0].name").value("Eco Cabaña"))
-                .andExpect(jsonPath("$[0].description").value("Una experiencia natural"))
-                .andExpect(jsonPath("$[0].imageUrl").value("image1.jpg"))
-                .andExpect(jsonPath("$[0].location").value("Montaña"))
-                .andExpect(jsonPath("$[0].pricePerNight").value(150.0));
+                .andExpect(jsonPath("$").isArray());
+    }
 
-        verify(stayService, times(1)).findAllListCards();
+    @Test
+    @Order(12)
+    @DisplayName("✅ Obtener stays por host")
+    void testGetStaysByHost() throws Exception {
+        mockMvc.perform(get("/stays/host/" + hostId))
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$").isArray());
+    }
+
+    @Test
+    @Order(13)
+    @DisplayName("✅ Eliminar stay")
+    void testDeleteStay() throws Exception {
+        // Primero creamos uno para borrar
+        StayRequest request = new StayRequest();
+        request.setName("Stay to Delete");
+        request.setDescription("Para borrar");
+        request.setLocation("Test");
+        request.setPricePerNight(100.0);
+        request.setCapacity(2);
+        request.setBedrooms(1);
+        request.setBeds(1);
+        request.setBathrooms(1);
+        request.setLatitude(0.0);
+        request.setLongitude(0.0);
+        request.setHostId(hostId);
+
+        MvcResult result = mockMvc.perform(post("/stays")
+                        .header("Authorization", "Bearer " + token)
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content(objectMapper.writeValueAsString(request)))
+                .andExpect(status().isCreated())
+                .andReturn();
+
+        Long idToDelete = objectMapper.readTree(result.getResponse().getContentAsString()).get("id").asLong();
+
+        // Ahora borramos
+        mockMvc.perform(delete("/stays/{id}", idToDelete)
+                        .header("Authorization", "Bearer " + token))
+                .andExpect(status().isNoContent());
     }
 }

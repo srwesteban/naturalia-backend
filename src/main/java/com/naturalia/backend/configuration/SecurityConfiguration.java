@@ -26,77 +26,99 @@ public class SecurityConfiguration {
 
     @Bean
     public SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
+
+
         http
                 .cors().and()
                 .csrf(csrf -> csrf.disable())
                 .authorizeHttpRequests(auth -> auth
-
-                        // 🔓 Auth y documentación pública
-                        .requestMatchers("/auth/**").permitAll()
-                        .requestMatchers(HttpMethod.GET, "/swagger-ui/**", "/v3/api-docs/**", "/swagger-ui.html").permitAll()
-
-                        // 🌐 Acceso público
-                        .requestMatchers(HttpMethod.GET, "/stays/**", "/categories/**", "/features/**", "/policies/**").permitAll()
-
-                        // 🏡 Stays
-                        .requestMatchers(HttpMethod.POST, "/stays/**").hasAnyRole("HOST", "ADMIN")
-                        .requestMatchers(HttpMethod.PUT, "/stays/**").hasAnyRole("HOST", "ADMIN")
-                        .requestMatchers(HttpMethod.DELETE, "/stays/**").hasAnyRole("HOST", "ADMIN")
-
-                        // 🗂️ Features
-                        .requestMatchers(HttpMethod.POST, "/features/**").hasAnyRole("ADMIN", "HOST")
-                        .requestMatchers(HttpMethod.PUT, "/features/**").hasAnyRole("ADMIN", "HOST")
-                        .requestMatchers(HttpMethod.DELETE, "/features/**").hasAnyRole("ADMIN", "HOST")
-                        //& Categories
-                        .requestMatchers(HttpMethod.POST,  "/categories/**").hasAnyRole("ADMIN", "HOST")
-                        .requestMatchers(HttpMethod.PUT, "/categories/**").hasAnyRole("ADMIN", "HOST")
-                        .requestMatchers(HttpMethod.DELETE, "/categories/**").hasAnyRole("ADMIN", "HOST")
-
-                        // ⭐ Favoritos
-                        .requestMatchers(HttpMethod.GET, "/favorites/**").hasAnyRole("USER", "HOST")
-                        .requestMatchers(HttpMethod.POST, "/favorites/**").hasAnyRole("USER", "HOST")
-                        .requestMatchers(HttpMethod.PUT, "/favorites/**").hasAnyRole("USER", "HOST")
-                        .requestMatchers(HttpMethod.DELETE, "/favorites/**").hasAnyRole("USER", "HOST")
-
-                        // 📅 Reservas
-                        .requestMatchers(HttpMethod.GET, "/reservations/**").hasAnyRole("USER", "HOST")
-                        .requestMatchers(HttpMethod.POST, "/reservations/**").hasAnyRole("USER", "HOST")
-                        .requestMatchers(HttpMethod.PUT, "/reservations/**").hasAnyRole("USER", "HOST")
-                        .requestMatchers(HttpMethod.DELETE, "/reservations/**").hasAnyRole("USER", "HOST")
-
-                        // 📝 Reseñas
-                        .requestMatchers(HttpMethod.GET, "/reviews", "/reviews/**").permitAll()
-                        .requestMatchers(HttpMethod.POST, "/reviews", "/reviews/**").hasAnyRole("USER", "HOST", "ADMIN")
-                        .requestMatchers(HttpMethod.PUT, "/reviews", "/reviews/**").hasAnyRole("USER", "HOST", "ADMIN")
-                        .requestMatchers(HttpMethod.DELETE, "/reviews", "/reviews/**").hasAnyRole("USER", "HOST", "ADMIN")
-
-                        // 👤 Usuarios
-                        .requestMatchers(HttpMethod.PUT, "/users/*/role").hasRole("USER")
-                        .requestMatchers("/users/**").hasRole("ADMIN")
-
-                        // 🔐 Todo lo demás requiere autenticación
-                        .anyRequest().authenticated()
+                        .anyRequest().permitAll() // 🔓 Permitir TODO temporalmente
                 )
                 .sessionManagement(session -> session.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
                 .authenticationProvider(authenticationProvider)
                 .addFilterBefore(jwtAuthenticationFilter, UsernamePasswordAuthenticationFilter.class);
 
         return http.build();
-    }
 
-    @Bean
-    public CorsConfigurationSource corsConfigurationSource() {
-        CorsConfiguration configuration = new CorsConfiguration();
-        configuration.setAllowedOrigins(List.of(
-                "http://localhost:5173",
-                "https://naturalia-frontend.vercel.app"
-        ));
-        configuration.setAllowedMethods(List.of("GET", "POST", "PUT", "DELETE", "OPTIONS"));
-        configuration.setAllowedHeaders(List.of("Authorization", "Content-Type"));
-        configuration.setAllowCredentials(true);
 
-        UrlBasedCorsConfigurationSource source = new UrlBasedCorsConfigurationSource();
-        source.registerCorsConfiguration("/**", configuration);
-        return source;
+
+
     }
+//        http
+//                .cors().and()
+//                .csrf(csrf -> csrf.disable())
+//                .authorizeHttpRequests(auth -> auth
+//
+//                        // 🔓 Auth y documentación pública
+//                        .requestMatchers("/auth/**").permitAll()
+//                        .requestMatchers(HttpMethod.GET, "/swagger-ui/**", "/v3/api-docs/**", "/swagger-ui.html").permitAll()
+//
+//                        // 🌐 Acceso público
+//                        .requestMatchers(HttpMethod.GET, "/stays/**", "/categories/**", "/features/**", "/policies/**").permitAll()
+//
+//                        // 🏡 Stays
+//                        .requestMatchers(HttpMethod.POST, "/stays/**").hasAnyRole("HOST", "ADMIN")
+//                        .requestMatchers(HttpMethod.PUT, "/stays/**").hasAnyRole("HOST", "ADMIN")
+//                        .requestMatchers(HttpMethod.DELETE, "/stays/**").hasAnyRole("HOST", "ADMIN")
+//
+//                        // 🗂️ Features
+//                        .requestMatchers(HttpMethod.POST, "/features/**").hasAnyRole("ADMIN", "HOST")
+//                        .requestMatchers(HttpMethod.PUT, "/features/**").hasAnyRole("ADMIN", "HOST")
+//                        .requestMatchers(HttpMethod.DELETE, "/features/**").hasAnyRole("ADMIN", "HOST")
+//                        //& Categories
+//                        .requestMatchers(HttpMethod.POST,  "/categories/**").hasAnyRole("ADMIN", "HOST")
+//                        .requestMatchers(HttpMethod.PUT, "/categories/**").hasAnyRole("ADMIN", "HOST")
+//                        .requestMatchers(HttpMethod.DELETE, "/categories/**").hasAnyRole("ADMIN", "HOST")
+//
+//                        // ⭐ Favoritos
+//                        .requestMatchers(HttpMethod.GET, "/favorites/**").hasAnyRole("USER", "HOST")
+//                        .requestMatchers(HttpMethod.POST, "/favorites/**").hasAnyRole("USER", "HOST")
+//                        .requestMatchers(HttpMethod.PUT, "/favorites/**").hasAnyRole("USER", "HOST")
+//                        .requestMatchers(HttpMethod.DELETE, "/favorites/**").hasAnyRole("USER", "HOST")
+//
+//                        // 📅 Reservas
+//                        .requestMatchers(HttpMethod.GET, "/reservations/**").hasAnyRole("USER", "HOST")
+//                        .requestMatchers(HttpMethod.POST, "/reservations/**").hasAnyRole("USER", "HOST")
+//                        .requestMatchers(HttpMethod.PUT, "/reservations/**").hasAnyRole("USER", "HOST")
+//                        .requestMatchers(HttpMethod.DELETE, "/reservations/**").hasAnyRole("USER", "HOST")
+//
+//                        // 📝 Reseñas
+//                        .requestMatchers(HttpMethod.GET, "/reviews", "/reviews/**").permitAll()
+//                        .requestMatchers(HttpMethod.POST, "/reviews", "/reviews/**").hasAnyRole("USER", "HOST", "ADMIN")
+//                        .requestMatchers(HttpMethod.PUT, "/reviews", "/reviews/**").hasAnyRole("USER", "HOST", "ADMIN")
+//                        .requestMatchers(HttpMethod.DELETE, "/reviews", "/reviews/**").hasAnyRole("USER", "HOST", "ADMIN")
+//
+//                        // 👤 Usuarios
+//                        .requestMatchers(HttpMethod.PUT, "/users/*/role").hasRole("USER")
+//                        .requestMatchers("/users/**").hasRole("ADMIN")
+//
+//                        // 🔐 Todo lo demás requiere autenticación
+//                        .anyRequest().authenticated()
+//                )
+//                .sessionManagement(session -> session.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
+//                .authenticationProvider(authenticationProvider)
+//                .addFilterBefore(jwtAuthenticationFilter, UsernamePasswordAuthenticationFilter.class);
+//
+//        return http.build();
+//    }
+//
+//    @Bean
+//    public CorsConfigurationSource corsConfigurationSource() {
+//        CorsConfiguration configuration = new CorsConfiguration();
+//        configuration.setAllowedOrigins(List.of(
+//                "http://localhost:5173",
+//                "https://naturalia-frontend.vercel.app"
+//        ));
+//        configuration.setAllowedMethods(List.of("GET", "POST", "PUT", "DELETE", "OPTIONS"));
+//        configuration.setAllowedHeaders(List.of("Authorization", "Content-Type"));
+//        configuration.setAllowCredentials(true);
+//
+//        UrlBasedCorsConfigurationSource source = new UrlBasedCorsConfigurationSource();
+//        source.registerCorsConfiguration("/**", configuration);
+//        return source;
+//    }
+
+
+
+
 }

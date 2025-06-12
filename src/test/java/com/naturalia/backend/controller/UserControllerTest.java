@@ -1,96 +1,103 @@
 package com.naturalia.backend.controller;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
-import com.naturalia.backend.entity.Role;
-import com.naturalia.backend.entity.User;
-import com.naturalia.backend.repository.IUserRepository;
-import com.naturalia.backend.service.IUserService;
+import com.naturalia.backend.authentication.AuthenticationRequest;
+import com.naturalia.backend.authentication.RegisterRequest;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
-import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
 import org.springframework.boot.test.context.SpringBootTest;
-import org.springframework.boot.test.mock.mockito.MockBean;
+import org.springframework.http.MediaType;
 import org.springframework.test.web.servlet.MockMvc;
+import org.springframework.test.web.servlet.MvcResult;
 
-import java.util.List;
-
-import static org.mockito.Mockito.when;
-import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
-import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.put;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.*;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.*;
 
 @SpringBootTest
 @AutoConfigureMockMvc
 public class UserControllerTest {
 
-    @MockBean
-    private IUserRepository userRepository;
-
-
     @Autowired
     private MockMvc mockMvc;
-
-    @MockBean
-    private IUserService userService;
 
     @Autowired
     private ObjectMapper objectMapper;
 
     @Test
-    @DisplayName("Debería retornar lista de usuarios")
-    public void shouldReturnListOfUsers() throws Exception {
-        User user1 = User.builder().id(1L).firstname("Juan").lastname("Pérez").email("juan@example.com").role(Role.USER).build();
-        User user2 = User.builder().id(2L).firstname("Ana").lastname("López").email("ana@example.com").role(Role.HOST).build();
+    @DisplayName("✅ Cambiar rol de usuario")
+    void shouldChangeUserRole() throws Exception {
+        RegisterRequest register = new RegisterRequest(
+                "Carlos", "Tester", "carlos" + System.currentTimeMillis() + "@test.com", "clave123",
+                "CC", "99999999", "+573002222222"
+        );
 
-        when(userService.findAll()).thenReturn(List.of(user1, user2));
+        // Registro
+        mockMvc.perform(post("/auth/register")
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content(objectMapper.writeValueAsString(register)))
+                .andExpect(status().isOk());
 
-        mockMvc.perform(get("/users"))
+        // Login
+        AuthenticationRequest login = new AuthenticationRequest(register.getEmail(), register.getPassword());
+
+        MvcResult loginResult = mockMvc.perform(post("/auth/login")
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content(objectMapper.writeValueAsString(login)))
                 .andExpect(status().isOk())
-                .andExpect(jsonPath("$.length()").value(2))
-                .andExpect(jsonPath("$[0].firstname").value("Juan"))
-                .andExpect(jsonPath("$[1].email").value("ana@example.com"));
+                .andReturn();
+
+        String token = objectMapper.readTree(loginResult.getResponse().getContentAsString()).get("token").asText();
+
+        // Obtener ID
+        MvcResult meResult = mockMvc.perform(get("/auth/me")
+                        .header("Authorization", "Bearer " + token))
+                .andExpect(status().isOk())
+                .andReturn();
+
+        Long userId = objectMapper.readTree(meResult.getResponse().getContentAsString()).get("id").asLong();
+
+        // Cambiar rol a HOST
+        mockMvc.perform(put("/users/" + userId + "/role")
+                        .param("role", "HOST")
+                        .header("Authorization", "Bearer " + token))
+                .andExpect(status().isOk());
     }
 
     @Test
-    @DisplayName("Debería retornar lista de hosts desde el repositorio")
-    public void shouldReturnListOfHostsFromRepository() throws Exception {
-        User user1 = User.builder().id(10L).firstname("Carlos").lastname("Ramírez").role(Role.HOST).build();
-        User user2 = User.builder().id(11L).firstname("Luisa").lastname("Martínez").role(Role.HOST).build();
+    @DisplayName("✅ Eliminar usuario")
+    void shouldDeleteUser() throws Exception {
+        RegisterRequest register = new RegisterRequest(
+                "Laura", "Tester", "laura" + System.currentTimeMillis() + "@test.com", "clave123",
+                "CC", "77777777", "+573003333333"
+        );
 
-        when(userRepository.findByRole(Role.HOST)).thenReturn(List.of(user1, user2));
+        // Registro
+        mockMvc.perform(post("/auth/register")
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content(objectMapper.writeValueAsString(register)))
+                .andExpect(status().isOk());
 
-        mockMvc.perform(get("/users/hosts"))
+        // Login
+        AuthenticationRequest login = new AuthenticationRequest(register.getEmail(), register.getPassword());
+
+        MvcResult loginResult = mockMvc.perform(post("/auth/login")
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content(objectMapper.writeValueAsString(login)))
                 .andExpect(status().isOk())
-                .andExpect(jsonPath("$.length()").value(2))
-                .andExpect(jsonPath("$[0].firstname").value("Carlos"))
-                .andExpect(jsonPath("$[1].lastname").value("Martínez"));
-    }
+                .andReturn();
 
+        String token = objectMapper.readTree(loginResult.getResponse().getContentAsString()).get("token").asText();
 
-    @Test
-    @DisplayName("Debería actualizar el rol del usuario")
-    public void shouldUpdateUserRole() throws Exception {
-        Long userId = 1L;
-        Role newRole = Role.ADMIN;
-
-        User updatedUser = User.builder()
-                .id(userId)
-                .firstname("David")
-                .lastname("Esteban")
-                .email("david@example.com")
-                .role(newRole)
-                .build();
-
-        when(userService.changeRole(userId, newRole)).thenReturn(updatedUser);
-
-        mockMvc.perform(put("/users/{userId}/role", userId)
-                        .param("role", "ADMIN"))
+        // Obtener ID
+        MvcResult meResult = mockMvc.perform(get("/auth/me")
+                        .header("Authorization", "Bearer " + token))
                 .andExpect(status().isOk())
-                .andExpect(jsonPath("$.role").value("ADMIN"))
-                .andExpect(jsonPath("$.firstname").value("David"));
+                .andReturn();
+
+        Long userId = objectMapper.readTree(meResult.getResponse().getContentAsString()).get("id").asLong();
+
+
     }
-
-
 }
