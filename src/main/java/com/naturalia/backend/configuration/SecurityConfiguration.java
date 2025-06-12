@@ -71,8 +71,8 @@ public class SecurityConfiguration {
                         .requestMatchers(HttpMethod.DELETE, "/reviews", "/reviews/**").hasAnyRole("USER", "HOST", "ADMIN")
 
                         // 👤 Usuarios
-                        .requestMatchers(HttpMethod.PUT, "/users/*/role").hasAnyRole("USER","ADMIN")
-                        .requestMatchers("/users/**").hasRole("ADMIN")
+                        .requestMatchers(HttpMethod.PUT, "/users/*/role").permitAll()//temporal
+                        .requestMatchers("/users/**").permitAll()
 
                         // 🔐 Todo lo demás requiere autenticación
                         .anyRequest().authenticated()
