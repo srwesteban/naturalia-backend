@@ -53,7 +53,7 @@ public class SecurityConfiguration {
                         .requestMatchers(HttpMethod.DELETE, "/categories/**").hasAnyRole("ADMIN", "HOST")
 
                         // ⭐ Favoritos
-                        .requestMatchers(HttpMethod.GET, "/favorites/**").hasAnyRole("USER", "HOST")
+                        .requestMatchers(HttpMethod.GET, "/favorites/**").hasAnyRole("USER", "HOST", "ADMIN")
                         .requestMatchers(HttpMethod.POST, "/favorites/**").hasAnyRole("USER", "HOST")
                         .requestMatchers(HttpMethod.PUT, "/favorites/**").hasAnyRole("USER", "HOST")
                         .requestMatchers(HttpMethod.DELETE, "/favorites/**").hasAnyRole("USER", "HOST")
