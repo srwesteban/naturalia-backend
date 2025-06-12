@@ -71,7 +71,7 @@ public class SecurityConfiguration {
                         .requestMatchers(HttpMethod.DELETE, "/reviews", "/reviews/**").hasAnyRole("USER", "HOST", "ADMIN")
 
                         // 👤 Usuarios
-                        .requestMatchers(HttpMethod.PUT, "/users/*/role").hasRole("USER")
+                        .requestMatchers(HttpMethod.PUT, "/users/*/role").hasAnyRole("USER","ADMIN")
                         .requestMatchers("/users/**").hasRole("ADMIN")
 
                         // 🔐 Todo lo demás requiere autenticación
